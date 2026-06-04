@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FOA – Forwarding Operations Assistant</title>
+  <meta name="description" content="Automatizá tus operaciones de forwarding con inteligencia artificial. Analizá cotizaciones, generá documentos y gestioná tu empresa desde un solo lugar." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1a365d;
+      --navy-dark: #112240;
+      --blue: #2563eb;
+      --blue-light: #eff6ff;
+      --accent: #0ea5e9;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --white: #ffffff;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .nav-logo {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -0.5px;
+    }
+
+    .nav-logo span { color: var(--blue); }
+
+    .nav-cta {
+      background: var(--blue);
+      color: var(--white);
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .nav-cta:hover { background: var(--navy); }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, #1e4d8c 100%);
+      color: var(--white);
+      padding: 100px 5% 80px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #93c5fd;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 0.35rem 1rem;
+      border-radius: 999px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      max-width: 800px;
+      margin: 0 auto 1.25rem;
+    }
+
+    .hero h1 span { color: #93c5fd; }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: #cbd5e1;
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: var(--white);
+      padding: 0.85rem 2rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: transform 0.2s, background 0.2s;
+      display: inline-block;
+    }
+
+    .btn-primary:hover { background: #1d4ed8; transform: translateY(-2px); }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 0.85rem 2rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.2s;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+
+    /* AUDIENCES */
+    .audiences {
+      padding: 80px 5%;
+      text-align: center;
+    }
+
+    .audience-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 3rem;
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 6px;
+      width: fit-content;
+      margin: 0 auto 3rem;
+    }
+
+    .toggle-btn {
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+
+    .toggle-btn.active {
+      background: var(--white);
+      color: var(--navy);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    }
+
+    .audience-panel { display: none; }
+    .audience-panel.active { display: block; }
+
+    .audience-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    @media (max-width: 700px) {
+      .audience-grid { grid-template-columns: 1fr; }
+    }
+
+    .audience-highlight {
+      background: var(--navy);
+      color: var(--white);
+      border-radius: 20px;
+      padding: 2.5rem;
+    }
+
+    .audience-highlight h3 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .audience-highlight .aud-sub {
+      color: #93c5fd;
+      font-size: 0.9rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .aud-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .aud-list li {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      align-items: flex-start;
+    }
+
+    .aud-list li .check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.7rem;
+      margin-top: 1px;
+    }
+
+    .audience-side {
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+    }
+
+    .audience-side h3 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 0.5rem;
+    }
+
+    .audience-side .aud-sub {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .audience-side .aud-list li { color: var(--text); }
+
+    .audience-side .check {
+      background: var(--blue-light) !important;
+      color: var(--blue) !important;
+    }
+
+    .margin-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
+      color: #bfdbfe;
+      margin-top: 1.75rem;
+      width: 100%;
+    }
+
+    .margin-badge strong { color: var(--white); font-size: 1.1rem; }
+
+    /* PROBLEM */
+    .problem {
+      background: #f8fafc;
+      padding: 80px 5%;
+      text-align: center;
+    }
+
+    .section-label {
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      max-width: 650px;
+      margin: 0 auto 1rem;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 580px;
+      margin: 0 auto 3rem;
+    }
+
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .pain-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: left;
+    }
+
+    .pain-icon {
+      font-size: 1.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .pain-card h4 {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.4rem;
+      color: var(--navy);
+    }
+
+    .pain-card p {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    /* FEATURES */
+    .features {
+      padding: 80px 5%;
+      text-align: center;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: left;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .feature-card:hover {
+      box-shadow: 0 8px 30px rgba(26,54,93,0.1);
+      transform: translateY(-3px);
+    }
+
+    .feature-number {
+      width: 40px;
+      height: 40px;
+      background: var(--blue-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--blue);
+      margin-bottom: 1.25rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.6rem;
+    }
+
+    .feature-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .feature-tag {
+      display: inline-block;
+      margin-top: 1rem;
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+    }
+
+    /* HOW IT WORKS */
+    .how {
+      background: #f8fafc;
+      padding: 80px 5%;
+      text-align: center;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 680px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .step {
+      display: flex;
+      gap: 1.5rem;
+      position: relative;
+      padding-bottom: 2rem;
+    }
+
+    .step:last-child { padding-bottom: 0; }
+
+    .step-line {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .step-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--white);
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-connector {
+      width: 2px;
+      flex: 1;
+      background: var(--border);
+      margin-top: 4px;
+    }
+
+    .step:last-child .step-connector { display: none; }
+
+    .step-content {
+      padding-top: 0.5rem;
+    }
+
+    .step-content h4 {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--navy);
+      margin-bottom: 0.35rem;
+    }
+
+    .step-content p {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* SOCIAL PROOF */
+    .proof {
+      padding: 80px 5%;
+      text-align: center;
+    }
+
+    .proof-stats {
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      flex-wrap: wrap;
+      margin-top: 2.5rem;
+    }
+
+    .stat h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -1px;
+    }
+
+    .stat p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* CTA FINAL */
+    .cta-section {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+      color: var(--white);
+      padding: 100px 5%;
+      text-align: center;
+    }
+
+    .cta-section h2 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      max-width: 600px;
+      margin: 0 auto 1rem;
+    }
+
+    .cta-section p {
+      color: #94a3b8;
+      font-size: 1.05rem;
+      max-width: 480px;
+      margin: 0 auto 2.5rem;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--navy-dark);
+      color: #64748b;
+      text-align: center;
+      padding: 2rem 5%;
+      font-size: 0.85rem;
+    }
+
+    footer strong { color: #94a3b8; }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .hero { padding: 70px 5% 60px; }
+      .proof-stats { gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">FOA <span>·</span> Forwarding Ops</div>
+  <a href="mailto:santirodriguezdr@gmail.com?subject=Quiero una demo de FOA" class="nav-cta">Pedir demo</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">IA para freight forwarders y empresas exportadoras e importadoras</div>
+  <h1>Tomá mejores decisiones.<br /><span>Cotizá, documentá y analizá</span><br />con inteligencia artificial.</h1>
+  <p>FOA automatiza las tareas operativas más repetitivas del forwarding: análisis de cotizaciones, cálculo de márgenes, generación de documentos y más — todo desde un navegador.</p>
+  <div class="hero-buttons">
+    <a href="mailto:santirodriguezdr@gmail.com?subject=Quiero una demo de FOA" class="btn-primary">Pedir demo gratuita</a>
+    <a href="https://script.google.com/macros/s/AKfycbzWq2316EpS-1hsDs_fUc2DhuMk4AA0_Y2syZ2cgARS1Adf6RjqIvgT-DG1H-4k5XwR/exec" target="_blank" class="btn-secondary">Ver la app</a>
+  </div>
+</section>
+
+<!-- AUDIENCES -->
+<section class="audiences" id="para-quien">
+  <div class="section-label">¿Para quién es FOA?</div>
+  <h2 class="section-title">Dos perfiles, una sola herramienta</h2>
+  <p class="section-sub">FOA se adapta a si sos el forwarder que cotiza o la empresa que compara forwarders.</p>
+
+  <div class="audience-grid">
+
+    <!-- FORWARDERS -->
+    <div class="audience-highlight">
+      <h3>Soy freight forwarder</h3>
+      <p class="aud-sub">Recibo cotizaciones de líneas marítimas, aéreas y transportes terrestres</p>
+      <ul class="aud-list">
+        <li>
+          <span class="check">✓</span>
+          <span>Subís los PDFs de tus proveedores (líneas marítimas, aéreas, transporte terrestre) y FOA los lee automáticamente</span>
+        </li>
+        <li>
+          <span class="check">✓</span>
+          <span>La IA analiza todas las opciones y te indica cuál es la más conveniente por precio total</span>
+        </li>
+        <li>
+          <span class="check">✓</span>
+          <span>Definís tu porcentaje de ganancia y FOA calcula el precio de venta al cliente automáticamente</span>
+        </li>
+        <li>
+          <span class="check">✓</span>
+          <span>Generás Invoice, Packing List y BL Instructions con tu branding en segundos</span>
+        </li>
+        <li>
+          <span class="check">✓</span>
+          <span>Todo queda registrado en tu historial de operaciones</span>
+        </li>
+      </ul>
+      <div class="margin-badge">
+        💡 Ejemplo: costo USD 1,200 + <strong>15%</strong> = precio de venta <strong>USD 1,380</strong> — calculado al instante
+      </div>
+    </div>
+
+    <!-- EMPRESAS -->
+    <div class="audience-side">
+      <h3>Soy empresa exportadora e importadora</h3>
+      <p class="aud-sub">Recibo cotizaciones de distintos freight forwarders</p>
+      <ul class="aud-list">
+        <li>
+          <span class="check" style="background:var(--blue-light);color:var(--blue)">✓</span>
+          <span>Subís los PDFs de cotización de cada forwarder y FOA extrae todos los datos relevantes</span>
+        </li>
+        <li>
+          <span class="check" style="background:var(--blue-light);color:var(--blue)">✓</span>
+          <span>Comparás origen, flete, destino, tiempo de tránsito y routing en una sola vista</span>
+        </li>
+        <li>
+          <span class="check" style="background:var(--blue-light);color:var(--blue)">✓</span>
+          <span>La IA identifica la opción más conveniente y explica por qué</span>
+        </li>
+        <li>
+          <span class="check" style="background:var(--blue-light);color:var(--blue)">✓</span>
+          <span>Recibís el email de respuesta en inglés listo para enviar al proveedor o forwarder elegido</span>
+        </li>
+        <li>
+          <span class="check" style="background:var(--blue-light);color:var(--blue)">✓</span>
+          <span>Sin leer PDFs manualmente ni armar planillas de comparación</span>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem">
+  <div class="section-label">El problema</div>
+  <h2 class="section-title">El forwarding sigue siendo manual — y eso cuesta tiempo</h2>
+  <p class="section-sub">Cada semana, los operadores de forwarding pierden horas en tareas que se podrían automatizar.</p>
+  <div class="pain-grid">
+    <div class="pain-card">
+      <div class="pain-icon">📄</div>
+      <h4>Comparar cotizaciones a mano</h4>
+      <p>Recibís PDFs de 5 forwarders distintos y tenés que leer y comparar todo vos.</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">✍️</div>
+      <h4>Generar documentos desde cero</h4>
+      <p>Invoice, Packing List, BL Instructions — siempre el mismo proceso, siempre manual.</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">📧</div>
+      <h4>Redactar emails al cliente</h4>
+      <p>Traducir el análisis técnico a un email profesional en inglés lleva tiempo valioso.</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">📊</div>
+      <h4>Sin registro de operaciones</h4>
+      <p>No hay historial centralizado. Todo queda perdido en carpetas y cadenas de email.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="modulos">
+  <div class="section-label">Solución</div>
+  <h2 class="section-title">Cuatro módulos que cubren tu operación</h2>
+  <p class="section-sub">FOA funciona 100% en el navegador, sin instalaciones ni integraciones complicadas.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-number">1</div>
+      <h3>Análisis de cotizaciones</h3>
+      <p>Subí los PDFs de tus forwarders y FOA extrae y compara los datos automáticamente: origen, flete, destino, tránsito y routing. También genera el email en inglés listo para enviar al cliente exportador e importador.</p>
+      <span class="feature-tag">IA incluida</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-number">2</div>
+      <h3>Generación de documentos</h3>
+      <p>Completás los datos del embarque una vez y FOA genera en segundos: Packing List y BL Instructions — con el branding de tu empresa, en PDF.</p>
+      <span class="feature-tag">PDF automático</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-number">3</div>
+      <h3>Perfil de empresa</h3>
+      <p>Configurás nombre, dirección, CUIT, logo y datos de contacto una sola vez. Toda la documentación generada usa esa información automáticamente.</p>
+      <span class="feature-tag">Config única</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-number">4</div>
+      <h3>Historial de operaciones</h3>
+      <p>Cada análisis y documento queda registrado automáticamente en Google Sheets. Podés consultar, filtrar y auditar todas tus operaciones desde la misma app.</p>
+      <span class="feature-tag">Google Sheets</span>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <div class="section-label">Cómo funciona</div>
+  <h2 class="section-title">Empezás a usar FOA en minutos</h2>
+  <p class="section-sub">Sin instalaciones. Sin integraciones complicadas. Solo tu navegador y tu cuenta de Google.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-line">
+        <div class="step-dot">1</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-content">
+        <h4>Pedís la demo</h4>
+        <p>Nos contactás y coordinamos una llamada corta para mostrarte FOA en acción con datos reales de tu operación.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-line">
+        <div class="step-dot">2</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-content">
+        <h4>Configuramos tu empresa</h4>
+        <p>Cargás nombre, logo y datos de tu empresa. Todo queda guardado para que cada documento ya salga con tu branding.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-line">
+        <div class="step-dot">3</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-content">
+        <h4>Operás desde el navegador</h4>
+        <p>Subís cotizaciones, generás documentos y consultás el historial — todo desde un solo lugar, sin Excel ni plantillas manuales.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="proof">
+  <div class="section-label">Impacto</div>
+  <h2 class="section-title">Menos tiempo operativo, más tiempo para crecer</h2>
+  <div class="proof-stats">
+    <div class="stat">
+      <h2>80%</h2>
+      <p>menos tiempo en análisis<br />de cotizaciones</p>
+    </div>
+    <div class="stat">
+      <h2>3 min</h2>
+      <p>para generar un set<br />completo de documentos</p>
+    </div>
+    <div class="stat">
+      <h2>0</h2>
+      <p>instalaciones<br />requeridas</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-section">
+  <h2>¿Listo para operar diferente?</h2>
+  <p>Pedí una demo gratuita y en 30 minutos te mostramos cómo FOA se adapta a tu operación.</p>
+  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+    <a href="mailto:santirodriguezdr@gmail.com?subject=Quiero una demo de FOA" class="btn-primary">Agendar demo gratuita</a>
+    <a href="https://script.google.com/macros/s/AKfycbzWq2316EpS-1hsDs_fUc2DhuMk4AA0_Y2syZ2cgARS1Adf6RjqIvgT-DG1H-4k5XwR/exec" target="_blank" class="btn-secondary">Ver la app</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p><strong>FOA – Forwarding Operations Assistant</strong></p>
+  <p style="margin-top:0.5rem;">Construido para freight forwarders de Latinoamérica · <a href="mailto:santirodriguezdr@gmail.com" style="color:#94a3b8;">santirodriguezdr@gmail.com</a></p>
+</footer>
+
+</body>
+</html>

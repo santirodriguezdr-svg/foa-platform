@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+  <html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyDocs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body{background:#f0f4f8;font-family:"Segoe UI",sans-serif}
+      .header{background:linear-gradient(135deg,#1a365d,#2d6a9f);color:white;padding:1.5rem 0}
+      .main-nav{background:#1a365d;padding:0 1.5rem}
+      .main-nav .nav-link{color:rgba(255,255,255,.65);border:none;border-radius:0;padding:.8rem 1.4rem;border-bottom:3px solid transparent}
+      .main-nav .nav-link.active,.main-nav .nav-link:hover{color:#fff;background:rgba(255,255,255,.1);border-bottom-color:#fff}
+      .card{border:none;box-shadow:0 2px 12px rgba(0,0,0,.08);border-radius:12px}
+      .btn-dark-blue{background:#1a365d;color:white;border:none;border-radius:8px}
+      .btn-dark-blue:hover{background:#2d6a9f;color:white}
+      .drop-zone{border:2px dashed #2d6a9f;border-radius:10px;padding:2rem;text-align:center;cursor:pointer;background:#f8fafc;transition:background .2s}
+      .drop-zone:hover,.drop-zone.dragover{background:#e8f0fe}
+      .file-item{background:#e8f4fd;border-radius:6px;padding:.4rem .8rem;margin:.25rem 0;display:flex;justify-content:space-between;align-items:center;font-size:.85rem}
+      .section-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#888;margin-bottom:1rem}
+      pre{white-space:pre-wrap;font-family:"Segoe UI",sans-serif;font-size:.88rem;line-height:1.6}
+      .ti{width:100%;border:1px solid #dee2e6;border-radius:4px;padding:.3rem .5rem;font-size:.83rem}
+    </style>
+  </head>
+  <body>
+
+  <div class="header">
+    <div class="container">
+      <h2 class="fw-bold mb-0">Forwarding Operations Assistant</h2>
+      <p class="mb-0 mt-1" style="opacity:.8;font-size:.9rem">Herramienta profesional de comercio exterior</p>
+    </div>
+  </div>
+
+  <ul class="nav main-nav" id="mainTabs">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-quotes">Cotizaciones</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-docs">Documentacion</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-company">Mi Empresa</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-history">Historial</a></li>
+  </ul>
+
+  <div class="tab-content">
+
+  <div class="tab-pane fade show active" id="tab-quotes">
+  <div class="container py-4 pb-5" style="max-width:960px">
+    <div class="card mb-3"><div class="card-body p-4">
+      <p class="section-label">Datos del embarque</p>
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Origen</label><input class="form-control" id="q-origen" placeholder="Inserte Origen"></div>
+        <div class="col-md-6"><label class="form-label">Destino</label><input class="form-control" id="q-destino" placeholder="Inserte Destino"></div>
+        <div class="col-12"><label class="form-label">Mercaderia</label><input class="form-control" id="q-mercaderia" placeholder="Descripcion de la mercaderia"></div>
+        <div class="col-md-3"><label class="form-label">Peso (kg)</label><input class="form-control" id="q-peso" type="number"></div>
+        <div class="col-md-3"><label class="form-label">Volumen (CBM)</label><input class="form-control" id="q-volumen" type="number"></div>
+        <div class="col-md-3"><label class="form-label">Incoterm</label><select class="form-select"
+  id="q-incoterm"><option>FOB</option><option>CIF</option><option>EXW</option><option>CFR</option><option>DAP</option><option>DDP</option></select></div>
+        <div class="col-md-3"><label class="form-label">Cliente</label><input class="form-control" id="q-cliente" placeholder="Global Imports LLC"></div>
+      </div>
+    </div></div>
+    <div class="card mb-4"><div class="card-body p-4">
+      <p class="section-label">PDFs de cotizacion</p>
+      <div class="drop-zone" id="q-drop" onclick="document.getElementById('q-file').click()">
+        <div style="font-size:2rem">📄</div>
+        <p class="fw-semibold mb-1">Subí los PDFs de cotizacion</p>
+        <p class="text-muted small mb-0">Click o arrastra - Solo PDF</p>
+        <input type="file" id="q-file" multiple accept=".pdf" style="display:none" onchange="handleQFiles(this.files)">
+      </div>
+      <div id="q-fileList" class="mt-3"></div>
+    </div></div>
+    <div class="text-center mb-4">
+      <button class="btn btn-dark-blue btn-lg px-5 py-3" onclick="analyzeQuotes()">Analizar cotizaciones</button>
+    </div>
+    <div id="q-loading" class="text-center py-4" style="display:none">
+      <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem"></div>
+      <p class="text-muted" id="q-loadMsg">Procesando...</p>
+    </div>
+    <div id="q-results" style="display:none">
+      <div class="row g-3">
+        <div class="col-md-6"><div class="card h-100"><div class="card-body p-4">
+          <p class="section-label">Analisis interno</p><pre id="q-internal"></pre>
+        </div></div></div>
+        <div class="col-md-6"><div class="card h-100"><div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <p class="section-label mb-0">Email al cliente (English)</p>
+            <button class="btn btn-sm btn-outline-secondary" onclick="copyEmail()">Copiar</button>
+          </div>
+          <pre id="q-email"></pre>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div class="tab-pane fade" id="tab-docs">
+  <div class="container py-4 pb-5" style="max-width:960px">
+    <div class="card mb-3"><div class="card-body p-4">
+      <p class="section-label">Datos del documento</p>
+      <div class="row g-3">
+        <div class="col-md-4"><label class="form-label">N Invoice</label><input class="form-control" id="d-invoiceNo" placeholder="INV-20260603-001"></div>
+        <div class="col-md-2"><label class="form-label">Fecha</label><input class="form-control" id="d-date" type="date"></div>
+        <div class="col-md-3"><label class="form-label">Incoterm</label><select class="form-select"
+  id="d-incoterm"><option>FOB</option><option>CIF</option><option>EXW</option><option>CFR</option><option>DAP</option><option>DDP</option></select></div>
+        <div class="col-md-3"><label class="form-label">Moneda</label><select class="form-select" id="d-currency"><option>USD</option><option>EUR</option><option>ARS</option></select></div>
+      </div>
+    </div></div>
+    <div class="card mb-3"><div class="card-body p-4">
+      <p class="section-label">Importador</p>
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Empresa</label><input class="form-control" id="d-importer" placeholder="Global Imports LLC"></div>
+        <div class="col-md-3"><label class="form-label">Pais</label><input class="form-control" id="d-importerCountry" placeholder="USA"></div>
+        <div class="col-md-3"><label class="form-label">Tax ID</label><input class="form-control" id="d-importerTaxId" placeholder="EIN"></div>
+        <div class="col-12"><label class="form-label">Direccion</label><input class="form-control" id="d-importerAddress" placeholder="500 Commerce St, Miami FL 33101"></div>
+      </div>
+    </div></div>
+    <div class="card mb-3"><div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <p class="section-label mb-0">Mercaderia</p>
+        <button class="btn btn-sm btn-outline-primary" onclick="addItem()">+ Agregar item</button>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm table-bordered" id="itemsTable">
+          <thead class="table-dark">
+            <tr><th>Descripcion</th><th style="width:100px">Pos. NCM</th><th style="width:65px">Cant.</th><th style="width:75px">Unidad</th><th style="width:110px">Precio Unit.</th><th style="width:80px">GW
+  (kg)</th><th style="width:80px">NW (kg)</th><th style="width:28px"></th></tr>
+          </thead>
+          <tbody id="itemsBody">
+            <tr>
+              <td><input class="ti" placeholder="Descripcion del producto"></td>
+              <td><input class="ti" placeholder="8430.49"></td>
+              <td><input class="ti" type="number" placeholder="1"></td>
+              <td><input class="ti" placeholder="u / kg"></td>
+              <td><input class="ti" type="number" placeholder="0"></td>
+              <td><input class="ti" type="number" placeholder="0"></td>
+              <td><input class="ti" type="number" placeholder="0"></td>
+              <td><button class="btn btn-sm text-danger p-0" onclick="removeItem(this)">x</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="row g-3 mt-1">
+        <div class="col-md-3"><label class="form-label">Valor total</label><input class="form-control" id="d-totalValue" type="number" placeholder="170000"></div>
+        <div class="col-md-3"><label class="form-label">GW total (kg)</label><input class="form-control" id="d-totalGW" type="number" placeholder="850"></div>
+        <div class="col-md-3"><label class="form-label">NW total (kg)</label><input class="form-control" id="d-totalNW" type="number" placeholder="820"></div>
+        <div class="col-md-3"><label class="form-label">Total CBM</label><input class="form-control" id="d-totalCBM" type="number" placeholder="4.2"></div>
+      </div>
+    </div></div>
+    <div class="card mb-3"><div class="card-body p-4">
+      <p class="section-label">Routing</p>
+      <div class="row g-3">
+        <div class="col-md-4"><label class="form-label">Puerto / Aeropuerto origen</label><input class="form-control" id="d-portLoad" placeholder="Puerto de Buenos Aires"></div>
+        <div class="col-md-4"><label class="form-label">Puerto / Aeropuerto destino</label><input class="form-control" id="d-portDischarge" placeholder="Port of Miami"></div>
+        <div class="col-md-4"><label class="form-label">Pais de origen</label><input class="form-control" id="d-originCountry" placeholder="Argentina"></div>
+        <div class="col-md-4"><label class="form-label">Buque / Vuelo</label><input class="form-control" id="d-vessel" placeholder="MSC OSCAR V.0612"></div>
+        <div class="col-md-2"><label class="form-label">ETD</label><input class="form-control" id="d-etd" type="date"></div>
+        <div class="col-md-2"><label class="form-label">ETA</label><input class="form-control" id="d-eta" type="date"></div>
+        <div class="col-md-4"><label class="form-label">Flete</label><select class="form-select" id="d-freight"><option>Freight Prepaid</option><option>Freight Collect</option><option>Freight as
+  Arranged</option></select></div>
+        <div class="col-12"><label class="form-label">Instrucciones especiales</label><textarea class="form-control" id="d-instructions" rows="2"></textarea></div>
+      </div>
+    </div></div>
+    <div class="card mb-4"><div class="card-body p-4">
+      <p class="section-label">Documentos a generar</p>
+      <div class="d-flex gap-4 mb-4">
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="gen-invoice" checked><label class="form-check-label" for="gen-invoice">Commercial Invoice</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="gen-packing" checked><label class="form-check-label" for="gen-packing">Packing List</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="gen-bl" checked><label class="form-check-label" for="gen-bl">BL Instructions</label></div>
+      </div>
+      <div class="text-center">
+        <button class="btn btn-dark-blue btn-lg px-5 py-3" onclick="generateDocs()">Generar y descargar PDFs</button>
+      </div>
+    </div></div>
+    <div id="d-loading" class="text-center py-4" style="display:none">
+      <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem"></div>
+      <p class="text-muted">Generando documentos...</p>
+    </div>
+    <div id="d-success" class="alert alert-success" style="display:none">Documentos generados. La descarga inicia automaticamente.</div>
+  </div>
+  </div>
+
+  <div class="tab-pane fade" id="tab-company">
+  <div class="container py-4 pb-5" style="max-width:620px">
+    <div class="card"><div class="card-body p-4">
+      <p class="section-label">Datos de tu empresa</p>
+      <div class="row g-3">
+        <div class="col-12"><label class="form-label">Nombre de la empresa</label><input class="form-control" id="c-name" placeholder="Logistica S.A."></div>
+        <div class="col-12"><label class="form-label">Direccion</label><input class="form-control" id="c-address" placeholder="Av. del Libertador 1234, Buenos Aires, Argentina"></div>
+        <div class="col-md-6"><label class="form-label">CUIT / Tax ID</label><input class="form-control" id="c-taxId" placeholder="30-12345678-9"></div>
+        <div class="col-md-6"><label class="form-label">Email</label><input class="form-control" id="c-email" type="email"></div>
+        <div class="col-md-6"><label class="form-label">Telefono</label><input class="form-control" id="c-phone"></div>
+        <div class="col-md-6"><label class="form-label">Sitio web</label><input class="form-control" id="c-website"></div>
+        <div class="col-12">
+          <label class="form-label">Logo de la empresa</label>
+          <div id="logo-preview-wrap" style="display:none;margin-bottom:.75rem">
+            <img id="logo-preview" style="max-height:60px;max-width:200px;border-radius:6px;border:1px solid #dee2e6;padding:4px">
+          </div>
+          <input class="form-control" type="file" id="c-logo-file" accept="image/*" onchange="previewLogo(this)">
+          <input type="hidden" id="c-logo">
+          <div class="form-text">PNG, JPG o SVG — se sube directo desde tu computadora.</div>
+        </div>
+      </div>
+      <div class="mt-4 text-center">
+        <button class="btn btn-dark-blue px-4 py-2" onclick="saveCompany()">Guardar configuracion</button>
+      </div>
+      <div id="c-saved" class="alert alert-success mt-3" style="display:none">Guardado correctamente.</div>
+    </div></div>
+  </div>
+  </div>
+
+  <div class="tab-pane fade" id="tab-history">
+  <div class="container py-4 pb-5" style="max-width:960px">
+    <div class="text-end mb-3">
+      <a id="sheetLink" href="#" target="_blank" class="btn btn-sm btn-outline-primary" style="display:none">Ver Google Sheet completo</a>
+    </div>
+    <div class="card mb-4"><div class="card-body p-4">
+      <p class="section-label">Cotizaciones analizadas</p>
+      <div id="histQuotes"><p class="text-muted text-center py-3">Cargando...</p></div>
+    </div></div>
+    <div class="card"><div class="card-body p-4">
+      <p class="section-label">Documentos generados</p>
+      <div id="histDocs"><p class="text-muted text-center py-3">Cargando...</p></div>
+    </div></div>
+  </div>
+  </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  var qFiles = [];
+
+  function handleQFiles(files) {
+    Array.from(files).forEach(function(f) {
+      if (!qFiles.find(function(u) { return u.name === f.name; })) qFiles.push(f);
+    });
+    renderQFiles();
+  }
+  function renderQFiles() {
+    var list = document.getElementById("q-fileList");
+    list.innerHTML = "";
+    qFiles.forEach(function(f, i) {
+      var div = document.createElement("div");
+      div.className = "file-item";
+      div.innerHTML = "📄 " + f.name;
+      var btn = document.createElement("button");
+      btn.className = "btn btn-sm btn-link text-danger p-0";
+      btn.textContent = "x";
+      btn.onclick = function() { qFiles.splice(i, 1); renderQFiles(); };
+      div.appendChild(btn);
+      list.appendChild(div);
+    });
+  }
+  function toB64(file) {
+    return new Promise(function(res, rej) {
+      var r = new FileReader();
+      r.onload = function(e) { res({ name: file.name, data: e.target.result.split(",")[1] }); };
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+  }
+  async function analyzeQuotes() {
+    var fd = {
+      origen: document.getElementById("q-origen").value,
+      destino: document.getElementById("q-destino").value,
+      mercaderia: document.getElementById("q-mercaderia").value,
+      peso: document.getElementById("q-peso").value,
+      volumen: document.getElementById("q-volumen").value,
+      incoterm: document.getElementById("q-incoterm").value,
+      cliente: document.getElementById("q-cliente").value
+    };
+    if (!fd.origen || !fd.destino || !fd.cliente) { alert("Completa Origen, Destino y Cliente."); return; }
+    if (!qFiles.length) { alert("Subi al menos un PDF."); return; }
+    document.getElementById("q-loading").style.display = "block";
+    document.getElementById("q-results").style.display = "none";
+    document.getElementById("q-loadMsg").textContent = "Leyendo PDFs...";
+    var fb = await Promise.all(qFiles.map(toB64));
+    document.getElementById("q-loadMsg").textContent = "Analizando con IA...";
+    google.script.run
+      .withSuccessHandler(function(r) {
+        document.getElementById("q-loading").style.display = "none";
+        if (r.error) { alert("Error: " + r.error); return; }
+        document.getElementById("q-internal").textContent = r.internalAnalysis;
+        document.getElementById("q-email").textContent = r.clientEmail;
+        document.getElementById("q-results").style.display = "block";
+        document.getElementById("q-results").scrollIntoView({ behavior: "smooth" });
+      })
+      .withFailureHandler(function(e) { document.getElementById("q-loading").style.display = "none"; alert("Error: " + e.message); })
+      .analyzeQuotes(fd, fb);
+  }
+  function copyEmail() {
+    navigator.clipboard.writeText(document.getElementById("q-email").textContent).then(function() { alert("Copiado"); });
+  }
+  var qdz = document.getElementById("q-drop");
+  qdz.addEventListener("dragover", function(e) { e.preventDefault(); qdz.classList.add("dragover"); });
+  qdz.addEventListener("dragleave", function() { qdz.classList.remove("dragover"); });
+  qdz.addEventListener("drop", function(e) { e.preventDefault(); qdz.classList.remove("dragover"); handleQFiles(e.dataTransfer.files); });
+
+  function addItem() {
+    var row = document.createElement("tr");
+    row.innerHTML = "<td><input class=\"ti\" placeholder=\"Descripcion\"></td><td><input class=\"ti\" placeholder=\"NCM\"></td><td><input class=\"ti\" type=\"number\" placeholder=\"1\"></td><td><input
+  class=\"ti\" placeholder=\"u/kg\"></td><td><input class=\"ti\" type=\"number\" placeholder=\"0\"></td><td><input class=\"ti\" type=\"number\" placeholder=\"0\"></td><td><input class=\"ti\" type=\"number\"
+  placeholder=\"0\"></td><td><button class=\"btn btn-sm text-danger p-0\" onclick=\"removeItem(this)\">x</button></td>";
+    document.getElementById("itemsBody").appendChild(row);
+  }
+  function removeItem(btn) {
+    var tbody = document.getElementById("itemsBody");
+    if (tbody.rows.length > 1) btn.closest("tr").remove();
+  }
+  function getItems() {
+    return Array.from(document.getElementById("itemsBody").rows).map(function(row) {
+      var inp = row.querySelectorAll("input");
+      var qty = parseFloat(inp[2].value) || 0;
+      var up = parseFloat(inp[4].value) || 0;
+      return { description: inp[0].value, hsCode: inp[1].value, qty: inp[2].value, unit: inp[3].value, unitPrice: inp[4].value, amount: (qty * up).toFixed(2), grossWeight: inp[5].value, netWeight:
+  inp[6].value, packages: "1" };
+    });
+  }
+  function generateDocs() {
+    var types = [];
+    if (document.getElementById("gen-invoice").checked) types.push("invoice");
+    if (document.getElementById("gen-packing").checked) types.push("packing");
+    if (document.getElementById("gen-bl").checked) types.push("bl");
+    if (!types.length) { alert("Selecciona al menos un documento."); return; }
+    var data = {
+      invoiceNo: document.getElementById("d-invoiceNo").value,
+      date: document.getElementById("d-date").value,
+      incoterm: document.getElementById("d-incoterm").value,
+      currency: document.getElementById("d-currency").value,
+      importador: document.getElementById("d-importer").value,
+      importadorCountry: document.getElementById("d-importerCountry").value,
+      importadorTaxId: document.getElementById("d-importerTaxId").value,
+      importadorAddress: document.getElementById("d-importerAddress").value,
+      items: getItems(),
+      totalValue: document.getElementById("d-totalValue").value,
+      totalGrossWeight: document.getElementById("d-totalGW").value,
+      totalNetWeight: document.getElementById("d-totalNW").value,
+      totalCBM: document.getElementById("d-totalCBM").value,
+      portOfLoading: document.getElementById("d-portLoad").value,
+      portOfDischarge: document.getElementById("d-portDischarge").value,
+      countryOfOrigin: document.getElementById("d-originCountry").value,
+      vessel: document.getElementById("d-vessel").value,
+      etd: document.getElementById("d-etd").value,
+      eta: document.getElementById("d-eta").value,
+      freightTerms: document.getElementById("d-freight").value,
+      specialInstructions: document.getElementById("d-instructions").value
+    };
+    if (!data.importador) { alert("Ingresa el nombre del importador."); return; }
+    document.getElementById("d-loading").style.display = "block";
+    document.getElementById("d-success").style.display = "none";
+    google.script.run
+      .withSuccessHandler(function(r) {
+        document.getElementById("d-loading").style.display = "none";
+        if (r.error) { alert("Error: " + r.error); return; }
+        r.documents.forEach(function(doc) { downloadPDF(doc.data, doc.fileName); });
+        document.getElementById("d-success").style.display = "block";
+      })
+      .withFailureHandler(function(e) { document.getElementById("d-loading").style.display = "none"; alert("Error: " + e.message); })
+      .generateAllDocuments(types, data);
+  }
+  function downloadPDF(b64, fileName) {
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    var url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
+    var a = document.createElement("a");
+    a.href = url; a.download = fileName;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+  }
+  function previewLogo(input) {
+    var file = input.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('logo-preview').src = e.target.result;
+      document.getElementById('logo-preview-wrap').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function saveCompany() {
+    var logoFile = document.getElementById('c-logo-file').files[0];
+    if (logoFile) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var base64 = e.target.result.split(',')[1];
+        google.script.run
+          .withSuccessHandler(function(r) {
+            if (r.error) { alert('Error subiendo logo: ' + r.error); return; }
+            document.getElementById('c-logo').value = r.url;
+            doSaveCompany();
+          })
+          .withFailureHandler(function(e) { alert('Error: ' + e.message); })
+          .uploadLogo(base64, logoFile.name, logoFile.type);
+      };
+      reader.readAsDataURL(logoFile);
+    } else {
+      doSaveCompany();
+    }
+  }
+
+  function doSaveCompany() {
+    google.script.run
+      .withSuccessHandler(function() {
+        document.getElementById('c-saved').style.display = 'block';
+        setTimeout(function() { document.getElementById('c-saved').style.display = 'none'; }, 3000);
+      })
+      .withFailureHandler(function(e) { alert('Error: ' + e.message); })
+      .saveCompanySettings({
+        name: document.getElementById('c-name').value,
+        address: document.getElementById('c-address').value,
+        taxId: document.getElementById('c-taxId').value,
+        email: document.getElementById('c-email').value,
+        phone: document.getElementById('c-phone').value,
+        website: document.getElementById('c-website').value,
+        logoUrl: document.getElementById('c-logo').value
+      });
+  }
+   google.script.run.withSuccessHandler(function(s) {
+    if (!s) return;
+    ['name','address','taxId','email','phone','website'].forEach(function(k) {
+      var el = document.getElementById('c-' + k);
+      if (el && s[k]) el.value = s[k];
+    });
+    if (s.logoUrl) {
+      document.getElementById('c-logo').value = s.logoUrl;
+      document.getElementById('logo-preview').src = s.logoUrl;
+      document.getElementById('logo-preview-wrap').style.display = 'block';
+    }
+  }).getCompanySettings();
+
+  document.querySelector("[href=\"#tab-history\"]").addEventListener("click", function() {
+    google.script.run
+      .withSuccessHandler(function(data) {
+        if (data.error) { document.getElementById("histQuotes").textContent = data.error; return; }
+        if (data.sheetUrl) { var l = document.getElementById("sheetLink"); l.href = data.sheetUrl; l.style.display = "inline-block"; }
+        renderTable("histQuotes", ["Fecha", "Origen - Destino", "Mercaderia", "Cliente", "Forwarders"],
+          (data.quotes || []).map(function(r) { return [new Date(r[0]).toLocaleDateString("es-AR"), r[1] + " - " + r[2], r[3], r[4], r[5]]; }));
+        renderTable("histDocs", ["Fecha", "N Invoice", "Importador", "Valor", "Documentos"],
+          (data.documents || []).map(function(r) { return [new Date(r[0]).toLocaleDateString("es-AR"), r[1], r[2], r[4] + " " + r[3], r[6]]; }));
+      })
+      .withFailureHandler(function(e) { document.getElementById("histQuotes").textContent = "Error: " + e.message; })
+      .getHistory();
+  });
+  function renderTable(id, headers, rows) {
+    var container = document.getElementById(id);
+    container.innerHTML = "";
+    if (!rows || !rows.length) { container.textContent = "Sin registros aun."; return; }
+    var table = document.createElement("table");
+    table.className = "table table-sm table-hover";
+    var thead = document.createElement("thead");
+    thead.className = "table-dark";
+    var hr = document.createElement("tr");
+    headers.forEach(function(h) { var th = document.createElement("th"); th.textContent = h; hr.appendChild(th); });
+    thead.appendChild(hr);
+    table.appendChild(thead);
+    var tbody = document.createElement("tbody");
+    rows.forEach(function(row) {
+      var tr = document.createElement("tr");
+      row.forEach(function(cell) { var td = document.createElement("td"); td.textContent = cell || ""; tr.appendChild(td); });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    container.appendChild(table);
+  }
+  </script>
+  </body>
+  </html>
