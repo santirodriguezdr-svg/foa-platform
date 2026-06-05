@@ -5,6 +5,10 @@ const INCOTERMS = ['FOB','CIF','EXW','CFR','DAP','DDP'];
 const CURRENCIES = ['USD','EUR','ARS'];
 const FREIGHTS = ['Freight Prepaid','Freight Collect','Freight as Arranged'];
 
+const F = ({ label, id, type = 'text', placeholder = '', form, onChange }) => (
+  <><label className="form-label">{label}</label><input className="form-control" type={type} placeholder={placeholder} value={form[id]} onChange={e => onChange(id, e.target.value)} /></>
+);
+
 export default function Documents() {
   const [form, setForm] = useState({
     invoiceNo: '', date: new Date().toISOString().split('T')[0], incoterm: 'FOB', currency: 'USD',
@@ -41,17 +45,13 @@ export default function Documents() {
     setLoading(false);
   };
 
-  const F = ({ label, id, type = 'text', placeholder = '' }) => (
-    <><label className="form-label">{label}</label><input className="form-control" type={type} placeholder={placeholder} value={form[id]} onChange={e => setF(id, e.target.value)} /></>
-  );
-
   return (
     <div>
       <div className="card mb-3"><div className="card-body p-4">
         <span className="section-label">Datos del documento</span>
         <div className="row g-3">
-          <div className="col-md-4"><F label="Invoice number" id="invoiceNo" placeholder="INV-001" /></div>
-          <div className="col-md-2"><F label="Fecha" id="date" type="date" /></div>
+          <div className="col-md-4"><F form={form} onChange={setF} label="Invoice number" id="invoiceNo" placeholder="INV-001" /></div>
+          <div className="col-md-2"><F form={form} onChange={setF} label="Fecha" id="date" type="date" /></div>
           <div className="col-md-3"><label className="form-label">Incoterm</label><select className="form-select" value={form.incoterm} onChange={e => setF('incoterm',e.target.value)}>{INCOTERMS.map(v=><option key={v}>{v}</option>)}</select></div>
           <div className="col-md-3"><label className="form-label">Moneda</label><select className="form-select" value={form.currency} onChange={e => setF('currency',e.target.value)}>{CURRENCIES.map(v=><option key={v}>{v}</option>)}</select></div>
         </div>
@@ -60,10 +60,10 @@ export default function Documents() {
       <div className="card mb-3"><div className="card-body p-4">
         <span className="section-label">Importador</span>
         <div className="row g-3">
-          <div className="col-md-6"><F label="Empresa" id="importador" placeholder="Ingrese el nombre de la empresa" /></div>
-          <div className="col-md-3"><F label="Pais" id="importadorCountry" placeholder="Ingrese el pais" /></div>
-          <div className="col-md-3"><F label="Tax ID" id="importadorTaxId" placeholder="Ingrese el ID fiscal" /></div>
-          <div className="col-12"><F label="Direccion" id="importadorAddress" placeholder="Ingrese la direccion" /></div>
+          <div className="col-md-6"><F form={form} onChange={setF} label="Empresa" id="importador" placeholder="Ingrese el nombre de la empresa" /></div>
+          <div className="col-md-3"><F form={form} onChange={setF} label="Pais" id="importadorCountry" placeholder="Ingrese el pais" /></div>
+          <div className="col-md-3"><F form={form} onChange={setF} label="Tax ID" id="importadorTaxId" placeholder="Ingrese el ID fiscal" /></div>
+          <div className="col-12"><F form={form} onChange={setF} label="Direccion" id="importadorAddress" placeholder="Ingrese la direccion" /></div>
         </div>
       </div></div>
 
@@ -89,7 +89,7 @@ export default function Documents() {
         </div>
         <div className="row g-3 mt-1">
           {[['totalValue','Valor total'],['totalGrossWeight','GW total (kg)'],['totalNetWeight','NW total (kg)'],['totalCBM','Total CBM']].map(([k,l])=>(
-            <div className="col-md-3" key={k}><F label={l} id={k} type="number" /></div>
+            <div className="col-md-3" key={k}><F form={form} onChange={setF} label={l} id={k} type="number" /></div>
           ))}
         </div>
       </div></div>
@@ -97,12 +97,12 @@ export default function Documents() {
       <div className="card mb-3"><div className="card-body p-4">
         <span className="section-label">Routing</span>
         <div className="row g-3">
-          <div className="col-md-4"><F label="Puerto origen" id="portOfLoading" placeholder="Ingrese el puerto de origen" /></div>
-          <div className="col-md-4"><F label="Puerto destino" id="portOfDischarge" placeholder="Ingrese el puerto de destino" /></div>
-          <div className="col-md-4"><F label="Pais de origen" id="countryOfOrigin" placeholder="Ingrese el pais de origen" /></div>
-          <div className="col-md-4"><F label="Buque / Vuelo" id="vessel" placeholder="Ingrese el buque o vuelo" /></div>
-          <div className="col-md-2"><F label="ETD" id="etd" type="date" /></div>
-          <div className="col-md-2"><F label="ETA" id="eta" type="date" /></div>
+          <div className="col-md-4"><F form={form} onChange={setF} label="Puerto origen" id="portOfLoading" placeholder="Ingrese el puerto de origen" /></div>
+          <div className="col-md-4"><F form={form} onChange={setF} label="Puerto destino" id="portOfDischarge" placeholder="Ingrese el puerto de destino" /></div>
+          <div className="col-md-4"><F form={form} onChange={setF} label="Pais de origen" id="countryOfOrigin" placeholder="Ingrese el pais de origen" /></div>
+          <div className="col-md-4"><F form={form} onChange={setF} label="Buque / Vuelo" id="vessel" placeholder="Ingrese el buque o vuelo" /></div>
+          <div className="col-md-2"><F form={form} onChange={setF} label="ETD" id="etd" type="date" /></div>
+          <div className="col-md-2"><F form={form} onChange={setF} label="ETA" id="eta" type="date" /></div>
           <div className="col-md-4"><label className="form-label">Flete</label><select className="form-select" value={form.freightTerms} onChange={e => setF('freightTerms',e.target.value)}>{FREIGHTS.map(v=><option key={v}>{v}</option>)}</select></div>
           <div className="col-12"><label className="form-label">Instrucciones especiales</label><textarea className="form-control" rows="2" value={form.specialInstructions} onChange={e => setF('specialInstructions',e.target.value)}></textarea></div>
         </div>
