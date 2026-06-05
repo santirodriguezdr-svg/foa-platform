@@ -4,6 +4,7 @@ import api from '../api';
 const INCOTERMS = ['FOB','CIF','EXW','CFR','DAP','DDP'];
 const CURRENCIES = ['USD','EUR','ARS'];
 const FREIGHTS = ['Freight Prepaid','Freight Collect','Freight as Arranged'];
+const UNITS = ['Cajas','Botellas','Pallets','Unidades','Bolsas','Tambores','Rollos','Piezas','KG','Litros','Sets','Pares'];
 
 const F = ({ label, id, type = 'text', placeholder = '', form, onChange }) => (
   <><label className="form-label">{label}</label><input className="form-control" type={type} placeholder={placeholder} value={form[id]} onChange={e => onChange(id, e.target.value)} /></>
@@ -73,15 +74,44 @@ export default function Documents() {
           <button className="btn btn-sm btn-outline-primary" onClick={() => setItems([...items, { description:'',hsCode:'',qty:'',unit:'',unitPrice:'',grossWeight:'',netWeight:'' }])}>+ Agregar item</button>
         </div>
         <div className="table-responsive">
-          <table className="table table-sm table-bordered">
-            <thead className="table-dark"><tr><th>Descripcion</th><th>NCM</th><th>Cant.</th><th>Unidad</th><th>Precio Unit.</th><th>GW (kg)</th><th>NW (kg)</th><th></th></tr></thead>
+          <table className="table table-sm table-bordered align-middle">
+            <thead className="table-dark">
+              <tr>
+                <th style={{minWidth:220}}>Descripcion</th>
+                <th style={{minWidth:90}}>NCM</th>
+                <th style={{minWidth:70}}>Cant.</th>
+                <th style={{minWidth:110}}>Unidad</th>
+                <th style={{minWidth:100}}>Precio Unit.</th>
+                <th style={{minWidth:80}}>GW (kg)</th>
+                <th style={{minWidth:80}}>NW (kg)</th>
+                <th></th>
+              </tr>
+            </thead>
             <tbody>
               {items.map((it, i) => (
                 <tr key={i}>
-                  {['description','hsCode','qty','unit','unitPrice','grossWeight','netWeight'].map(k => (
-                    <td key={k}><input className="form-control form-control-sm" value={it[k]} onChange={e => setItem(i,k,e.target.value)} /></td>
-                  ))}
-                  <td><button className="btn btn-sm text-danger" onClick={() => items.length > 1 && setItems(items.filter((_,j)=>j!==i))}>x</button></td>
+                  <td>
+                    <textarea
+                      className="form-control form-control-sm"
+                      rows="3"
+                      style={{resize:'vertical', minHeight:'64px'}}
+                      value={it.description}
+                      onChange={e => setItem(i,'description',e.target.value)}
+                      placeholder="Descripcion detallada de la mercaderia"
+                    />
+                  </td>
+                  <td><input className="form-control form-control-sm" value={it.hsCode} onChange={e => setItem(i,'hsCode',e.target.value)} placeholder="0000.00" /></td>
+                  <td><input className="form-control form-control-sm" type="number" min="0" value={it.qty} onChange={e => setItem(i,'qty',e.target.value)} /></td>
+                  <td>
+                    <select className="form-select form-select-sm" value={it.unit} onChange={e => setItem(i,'unit',e.target.value)}>
+                      <option value="">Seleccionar</option>
+                      {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+                    </select>
+                  </td>
+                  <td><input className="form-control form-control-sm" type="number" min="0" step="0.01" value={it.unitPrice} onChange={e => setItem(i,'unitPrice',e.target.value)} /></td>
+                  <td><input className="form-control form-control-sm" type="number" min="0" step="0.01" value={it.grossWeight} onChange={e => setItem(i,'grossWeight',e.target.value)} /></td>
+                  <td><input className="form-control form-control-sm" type="number" min="0" step="0.01" value={it.netWeight} onChange={e => setItem(i,'netWeight',e.target.value)} /></td>
+                  <td><button className="btn btn-sm text-danger" onClick={() => items.length > 1 && setItems(items.filter((_,j)=>j!==i))}>✕</button></td>
                 </tr>
               ))}
             </tbody>

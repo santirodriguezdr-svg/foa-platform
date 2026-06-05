@@ -47,40 +47,44 @@ function buildPDF(docType, data, company) {
     const contentY = 300;
     if (docType === 'invoice') {
       const items = data.items || [];
-      const headers = ['Description', 'HS Code', 'Qty', 'Unit Price', 'Amount'];
-      const colW = [180, 80, 50, 90, 95];
+      const headers = ['Description', 'HS Code', 'Qty / Unit', 'Unit Price', 'Amount'];
+      const colW = [180, 80, 70, 85, 80];
       let x = 50, hY = contentY;
       headers.forEach((h, i) => { doc.rect(x, hY, colW[i], 18).fill(navy); doc.fillColor('white').font('Helvetica-Bold').fontSize(8).text(h, x+4, hY+4, {width: colW[i]-8}); x += colW[i]; });
       let rowY = contentY + 18;
       items.forEach((item, idx) => {
         const bg = idx % 2 === 0 ? 'white' : '#f0f4f8';
+        const descH = Math.max(22, doc.font('Helvetica').fontSize(8).heightOfString(item.description || '', {width: colW[0]-8}) + 10);
         x = 50;
-        [item.description, item.hsCode, item.qty, `${data.currency} ${item.unitPrice}`, `${data.currency} ${item.amount}`].forEach((v, i) => {
-          doc.rect(x, rowY, colW[i], 18).fill(bg);
+        const qtyUnit = [item.qty, item.unit].filter(Boolean).join(' ');
+        [item.description, item.hsCode, qtyUnit, `${data.currency} ${item.unitPrice}`, `${data.currency} ${item.amount}`].forEach((v, i) => {
+          doc.rect(x, rowY, colW[i], descH).fill(bg);
           doc.fillColor('#000').font('Helvetica').fontSize(8).text(v || '', x+4, rowY+4, {width: colW[i]-8});
           x += colW[i];
         });
-        rowY += 18;
+        rowY += descH;
       });
       doc.rect(355, rowY, 90, 18).fill('#e8f0fe').rect(445, rowY, 100, 18).fill(navy);
       doc.fillColor(navy).font('Helvetica-Bold').fontSize(9).text('TOTAL', 359, rowY+4);
       doc.fillColor('white').text(`${data.currency} ${data.totalValue}`, 449, rowY+4);
     } else if (docType === 'packing') {
       const items = data.items || [];
-      const headers = ['Description', 'Packages', 'GW (kg)', 'NW (kg)', 'CBM'];
-      const colW = [220, 75, 75, 75, 100];
+      const headers = ['Description', 'Qty / Unit', 'GW (kg)', 'NW (kg)', 'CBM'];
+      const colW = [200, 95, 75, 75, 100];
       let x = 50, hY = contentY;
       headers.forEach((h, i) => { doc.rect(x, hY, colW[i], 18).fill(navy); doc.fillColor('white').font('Helvetica-Bold').fontSize(8).text(h, x+4, hY+4); x += colW[i]; });
       let rowY = contentY + 18;
       items.forEach((item, idx) => {
         const bg = idx % 2 === 0 ? 'white' : '#f0f4f8';
+        const descH = Math.max(22, doc.font('Helvetica').fontSize(8).heightOfString(item.description || '', {width: colW[0]-8}) + 10);
+        const qtyUnit = [item.qty, item.unit].filter(Boolean).join(' ');
         x = 50;
-        [item.description, item.packages || '1', item.grossWeight, item.netWeight, ''].forEach((v, i) => {
-          doc.rect(x, rowY, colW[i], 18).fill(bg);
-          doc.fillColor('#000').font('Helvetica').fontSize(8).text(v || '', x+4, rowY+4);
+        [item.description, qtyUnit, item.grossWeight, item.netWeight, ''].forEach((v, i) => {
+          doc.rect(x, rowY, colW[i], descH).fill(bg);
+          doc.fillColor('#000').font('Helvetica').fontSize(8).text(v || '', x+4, rowY+4, {width: colW[i]-8});
           x += colW[i];
         });
-        rowY += 18;
+        rowY += descH;
       });
       x = 50;
       [['TOTALS', '#e8f0fe'], ['' , '#e8f0fe'], [data.totalGrossWeight, '#e8f0fe'], [data.totalNetWeight, '#e8f0fe'], [data.totalCBM, '#e8f0fe']].forEach(([v, bg], i) => {
@@ -99,7 +103,7 @@ function buildPDF(docType, data, company) {
         ['ETD', data.etd || ''],
         ['ETA', data.eta || ''],
         ['Freight Terms', data.freightTerms || ''],
-        ['Description of Goods', (data.items || []).map(i => i.description).join(', ')],
+        ['Description of Goods', (data.items || []).map(i => [i.qty, i.unit, i.description].filter(Boolean).join(' ')).join('\n')],
         ['Gross Weight', `${data.totalGrossWeight || ''} kg`],
         ['Measurement', `${data.totalCBM || ''} CBM`]
       ];
