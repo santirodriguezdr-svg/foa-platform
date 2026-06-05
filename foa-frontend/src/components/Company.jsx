@@ -4,6 +4,8 @@ import api from '../api';
 export default function Company() {
   const [form, setForm] = useState({ name: '', address: '', tax_id: '', email: '', phone: '', website: '', logo_url: '' });
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [logoError, setLogoError] = useState('');
   const fileInputRef = useRef();
 
@@ -34,9 +36,17 @@ export default function Company() {
   };
 
   const save = async () => {
-    await api.put('/api/company', form);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setSaving(true);
+    setSaveError('');
+    try {
+      await api.put('/api/company', form);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (e) {
+      setSaveError('No se pudo guardar. Intenta de nuevo en unos segundos.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -112,14 +122,19 @@ export default function Company() {
           </div>
 
           <div style={{ marginTop: '1.75rem' }}>
-            <button className="btn btn-navy px-4 py-2" onClick={save}>
-              Guardar configuracion
+            <button className="btn btn-navy px-4 py-2" onClick={save} disabled={saving}>
+              {saving ? 'Guardando...' : 'Guardar configuracion'}
             </button>
           </div>
 
           {saved && (
             <div className="alert alert-success mt-3">
               ✓ Configuracion guardada correctamente.
+            </div>
+          )}
+          {saveError && (
+            <div className="alert alert-danger mt-3">
+              {saveError}
             </div>
           )}
         </div>
