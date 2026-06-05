@@ -1,7 +1,43 @@
 const router = require('express').Router();
 const PDFDocument = require('pdfkit');
+const multer = require('multer');
+const pdfParse = require('pdf-parse');
+const { callGroq } = require('../services/groq');
 const { pool } = require('../db');
 const auth = require('../middleware/auth');
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+
+router.post('/parse-booking', auth, upload.single('file'), async (req, res) => {
+  try {
+    const parsed = await pdfParse(req.file.buffer);
+    const text = parsed.text.substring(0, 4000);
+
+    const prompt = `You are a freight forwarding expert. Extract shipping booking data from this document.
+Return ONLY a valid JSON object with these exact keys (use empty string "" if not found):
+{
+  "booking": "booking number",
+  "vessel": "vessel/ship name",
+  "portOfLoading": "port of loading full name",
+  "portOfDischarge": "port of discharge full name",
+  "destFinal": "final destination if different from POD",
+  "etd": "ETD date in YYYY-MM-DD format",
+  "eta": "ETA date in YYYY-MM-DD format",
+  "container": "container number",
+  "seal": "seal number",
+  "freightTerms": "freight terms (Freight Prepaid or Freight Collect)"
+}
+Document:
+---
+${text}`;
+
+    const result = await callGroq(prompt);
+    const cleaned = result.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    res.json(JSON.parse(cleaned));
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 const NAVY = '#1a365d';
 

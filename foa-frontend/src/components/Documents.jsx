@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import api from '../api';
 import PortSearch from './PortSearch';
 import ClientSelect from './ClientSelect';
@@ -29,8 +29,41 @@ export default function Documents() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const [bookingParsing, setBookingParsing] = useState(false);
+  const [bookingMsg, setBookingMsg] = useState('');
+  const bookingInputRef = useRef();
+
   const setF = (k, v) => setForm(p => ({ ...p, [k]: v }));
   const setItem = (i, k, v) => setItems(prev => prev.map((it, j) => j === i ? { ...it, [k]: v } : it));
+
+  const parseBooking = async (file) => {
+    if (!file) return;
+    setBookingParsing(true);
+    setBookingMsg('');
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const { data } = await api.post('/api/documents/parse-booking', fd);
+      if (data.error) { setBookingMsg('No se pudieron extraer los datos.'); return; }
+      setForm(f => ({
+        ...f,
+        ...(data.booking       && { booking:         data.booking }),
+        ...(data.vessel        && { vessel:           data.vessel }),
+        ...(data.portOfLoading && { portOfLoading:    data.portOfLoading }),
+        ...(data.portOfDischarge && { portOfDischarge: data.portOfDischarge }),
+        ...(data.destFinal     && { destFinal:        data.destFinal }),
+        ...(data.etd           && { etd:              data.etd }),
+        ...(data.eta           && { eta:              data.eta }),
+        ...(data.container     && { container:        data.container }),
+        ...(data.seal          && { seal:             data.seal }),
+        ...(data.freightTerms  && FREIGHTS.includes(data.freightTerms) && { freightTerms: data.freightTerms }),
+      }));
+      const filled = Object.values(data).filter(v => v && v !== '').length;
+      setBookingMsg(`✓ ${filled} campos completados automáticamente.`);
+    } catch { setBookingMsg('Error al procesar el archivo.'); }
+    setBookingParsing(false);
+    if (bookingInputRef.current) bookingInputRef.current.value = '';
+  };
 
   const generate = async () => {
     const types = Object.entries(docTypes).filter(([,v]) => v).map(([k]) => k);
@@ -157,7 +190,27 @@ export default function Documents() {
 
       {/* Routing y transporte */}
       <div className="card mb-3"><div className="card-body p-4">
-        <span className="section-label">Routing y transporte</span>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <span className="section-label mb-0">Routing y transporte</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {bookingMsg && (
+              <span style={{ fontSize: '0.78rem', color: bookingMsg.startsWith('✓') ? '#16a34a' : '#ef4444', fontWeight: 600 }}>
+                {bookingMsg}
+              </span>
+            )}
+            <button
+              className="btn btn-sm"
+              style={{ fontSize: '0.78rem', border: '1.5px solid #2563eb', color: '#2563eb', background: 'white', padding: '4px 12px', fontWeight: 600, borderRadius: 7 }}
+              onClick={() => bookingInputRef.current?.click()}
+              disabled={bookingParsing}
+            >
+              {bookingParsing
+                ? <><span className="spinner-border spinner-border-sm me-1" style={{ width: 11, height: 11 }} />Leyendo...</>
+                : '✦ Autocompletar desde booking'}
+            </button>
+            <input ref={bookingInputRef} type="file" accept=".pdf" style={{ display: 'none' }} onChange={e => parseBooking(e.target.files[0])} />
+          </div>
+        </div>
         <div className="row g-3">
           <div className="col-md-4"><F form={form} onChange={setF} label="Buque / Vuelo" id="vessel" placeholder="Nombre del buque o vuelo" /></div>
           <div className="col-md-4"><PortSearch label="Puerto de carga" value={form.portOfLoading} onChange={v => setF('portOfLoading', v)} /></div>
