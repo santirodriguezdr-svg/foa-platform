@@ -12,7 +12,7 @@ function buildPDF(docType, data, company) {
     doc.on('error', reject);
 
     const navy = '#1a365d';
-    const titles = { invoice: 'COMMERCIAL INVOICE', packing: 'PACKING LIST', bl: 'BILL OF LADING INSTRUCTIONS' };
+    const titles = { invoice: 'COMMERCIAL INVOICE', packing: 'PACKING LIST', bl: 'DECLARACION DE EMBARQUE' };
 
     // Header
     doc.fontSize(18).fillColor(navy).font('Helvetica-Bold').text(company.name || 'Empresa', 50, 50);
@@ -93,26 +93,46 @@ function buildPDF(docType, data, company) {
         x += colW[i];
       });
     } else {
+      const shipperInfo = [company.name, company.address, company.tax_id ? `CUIT: ${company.tax_id}` : '', company.email].filter(Boolean).join('\n');
+      const consigneeInfo = [data.importador, data.importadorAddress, data.importadorCountry, data.importadorTaxId ? `Tax ID: ${data.importadorTaxId}` : ''].filter(Boolean).join('\n');
+      const notifyInfo = data.notificatario
+        ? [data.notificatario, data.notificatarioAddress].filter(Boolean).join('\n')
+        : consigneeInfo;
+      const descGoods = (data.items || []).map(i => [i.qty, i.unit, i.description].filter(Boolean).join(' ')).join('\n');
+      const containerInfo = [
+        data.container ? `Container: ${data.container}` : '',
+        data.seal ? `Seal: ${data.seal}` : '',
+        data.booking ? `Booking: ${data.booking}` : ''
+      ].filter(Boolean).join('  |  ');
+
       const fields = [
-        ['Shipper', `${company.name || ''}\n${company.address || ''}`],
-        ['Consignee', `${data.importador || ''}\n${data.importadorAddress || ''}`],
-        ['Notify Party', data.importador || ''],
-        ['Port of Loading', data.portOfLoading || ''],
-        ['Port of Discharge', data.portOfDischarge || ''],
-        ['Vessel / Flight', data.vessel || ''],
-        ['ETD', data.etd || ''],
-        ['ETA', data.eta || ''],
-        ['Freight Terms', data.freightTerms || ''],
-        ['Description of Goods', (data.items || []).map(i => [i.qty, i.unit, i.description].filter(Boolean).join(' ')).join('\n')],
-        ['Gross Weight', `${data.totalGrossWeight || ''} kg`],
-        ['Measurement', `${data.totalCBM || ''} CBM`]
+        ['(1) Buque / Puerto de carga', `${data.vessel || ''}  |  ${data.portOfLoading || ''}`],
+        ['(2) Puerto de descarga', data.portOfDischarge || ''],
+        ['(3) Destino final', data.destFinal || data.portOfDischarge || ''],
+        ['(4-5) Cant. Orig. / Copias', `${data.cantOrig || '1'} originales  /  ${data.cantCopias || '3'} copias`],
+        ['(6) Lugar de pago', data.lugarPago || ''],
+        ['(7) Embarcador', shipperInfo],
+        ['(8) Consignatario', consigneeInfo],
+        ['(9) Notificatario', notifyInfo],
+        ['(10) Marcas y numeros', containerInfo || data.marcasNros || ''],
+        ['(11) Desc. de la mercaderia', descGoods],
+        ['(12) Peso bruto total', `${data.totalGrossWeight || ''} kg`],
+        ['(13) Cubicaje total', `${data.totalCBM || ''} CBM`],
+        ['ETD / ETA', `${data.etd || ''}  /  ${data.eta || ''}`],
+        ['Terminos de flete', `${data.freightTerms || ''}  |  ${data.incoterm || ''}`],
+        ['(14) N° Permiso de embarque', data.permisoEmbarque || ''],
+        ['(16) Observaciones', data.specialInstructions || ''],
+        ['(17) Confeccionado por', `${company.name || ''}  -  Forwarding Operations Assistant`]
       ];
+
       let fY = contentY;
       fields.forEach(([label, value], idx) => {
-        const h = Math.max(20, Math.ceil(value.length / 40) * 12 + 8);
-        doc.rect(50, fY, 150, h).fill(navy).rect(200, fY, 345, h).fill(idx % 2 === 0 ? '#f0f4f8' : 'white');
-        doc.fillColor('white').font('Helvetica-Bold').fontSize(8).text(label, 55, fY+4, {width: 140});
-        doc.fillColor('#333').font('Helvetica').fontSize(8).text(value, 205, fY+4, {width: 335});
+        doc.font('Helvetica').fontSize(8);
+        const h = Math.max(22, doc.heightOfString(value, {width: 330}) + 12);
+        doc.rect(50, fY, 155, h).fill(idx % 2 === 0 ? navy : '#1e3a5f');
+        doc.rect(205, fY, 340, h).fill(idx % 2 === 0 ? '#f0f4f8' : 'white');
+        doc.fillColor('white').font('Helvetica-Bold').fontSize(7.5).text(label, 55, fY+5, {width: 145});
+        doc.fillColor('#222').font('Helvetica').fontSize(8).text(value || '-', 210, fY+5, {width: 330});
         fY += h;
       });
     }
