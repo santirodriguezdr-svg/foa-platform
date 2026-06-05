@@ -31,69 +31,112 @@ export default function Quotes() {
 
   return (
     <div>
+      {/* Datos del embarque */}
       <div className="card mb-3">
         <div className="card-body p-4">
           <span className="section-label">Datos del embarque</span>
           <div className="row g-3">
-            {[['origen','Origen','Inserte Origen'],['destino','Destino','Inserte Destino']].map(([k,l,p]) => (
-              <div className="col-md-6" key={k}><label className="form-label">{l}</label><input className="form-control" placeholder={p} value={form[k]} onChange={e => setForm({...form,[k]:e.target.value})} /></div>
+            {[['origen','Origen','Ej: Buenos Aires, Argentina'],['destino','Destino','Ej: Miami, USA']].map(([k,l,p]) => (
+              <div className="col-md-6" key={k}>
+                <label className="form-label">{l}</label>
+                <input className="form-control" placeholder={p} value={form[k]} onChange={e => setForm({...form,[k]:e.target.value})} />
+              </div>
             ))}
-            <div className="col-12"><label className="form-label">Mercaderia</label><input className="form-control" placeholder="Descripcion de la mercaderia" value={form.mercaderia} onChange={e => setForm({...form,mercaderia:e.target.value})} /></div>
-            <div className="col-md-3"><label className="form-label">Peso (kg)</label><input className="form-control" type="number" value={form.peso} onChange={e => setForm({...form,peso:e.target.value})} /></div>
-            <div className="col-md-3"><label className="form-label">Volumen (CBM)</label><input className="form-control" type="number" value={form.volumen} onChange={e => setForm({...form,volumen:e.target.value})} /></div>
-            <div className="col-md-3"><label className="form-label">Incoterm</label>
+            <div className="col-12">
+              <label className="form-label">Mercaderia</label>
+              <input className="form-control" placeholder="Descripcion de la mercaderia" value={form.mercaderia} onChange={e => setForm({...form,mercaderia:e.target.value})} />
+            </div>
+            <div className="col-md-3">
+              <label className="form-label">Peso (kg)</label>
+              <input className="form-control" type="number" placeholder="0" value={form.peso} onChange={e => setForm({...form,peso:e.target.value})} />
+            </div>
+            <div className="col-md-3">
+              <label className="form-label">Volumen (CBM)</label>
+              <input className="form-control" type="number" placeholder="0" value={form.volumen} onChange={e => setForm({...form,volumen:e.target.value})} />
+            </div>
+            <div className="col-md-3">
+              <label className="form-label">Incoterm</label>
               <select className="form-select" value={form.incoterm} onChange={e => setForm({...form,incoterm:e.target.value})}>
                 {['FOB','CIF','EXW','CFR','DAP','DDP'].map(v => <option key={v}>{v}</option>)}
               </select>
             </div>
-            <div className="col-md-3"><label className="form-label">Cliente</label><input className="form-control" placeholder="Global Imports LLC" value={form.cliente} onChange={e => setForm({...form,cliente:e.target.value})} /></div>
+            <div className="col-md-3">
+              <label className="form-label">Cliente</label>
+              <input className="form-control" placeholder="Global Imports LLC" value={form.cliente} onChange={e => setForm({...form,cliente:e.target.value})} />
+            </div>
           </div>
         </div>
       </div>
 
+      {/* PDFs */}
       <div className="card mb-4">
         <div className="card-body p-4">
           <span className="section-label">PDFs de cotizacion</span>
-          <div className="drop-zone" onClick={() => inputRef.current.click()}
-            onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); addFiles(e.dataTransfer.files); }}>
-            <div style={{ fontSize: '2rem' }}>&#128196;</div>
-            <p className="fw-semibold mb-1">Subi los PDFs de cotizacion</p>
-            <p className="text-muted small mb-0">Click o arrastra - Solo PDF</p>
+          <div
+            className="drop-zone"
+            onClick={() => inputRef.current.click()}
+            onDragOver={e => e.preventDefault()}
+            onDrop={e => { e.preventDefault(); addFiles(e.dataTransfer.files); }}
+          >
+            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📄</div>
+            <p style={{ fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem', fontSize: '0.9rem' }}>
+              Subi los PDFs de cotizacion
+            </p>
+            <p style={{ color: '#64748b', fontSize: '0.8rem', margin: 0 }}>Click o arrastra · Solo PDF</p>
             <input ref={inputRef} type="file" multiple accept=".pdf" style={{ display: 'none' }} onChange={e => addFiles(e.target.files)} />
           </div>
           {files.map((f, i) => (
-            <div key={i} className="d-flex justify-content-between align-items-center bg-light rounded px-3 py-1 mt-2" style={{ fontSize: '.85rem' }}>
-              <span>[PDF] {f.name}</span>
-              <button className="btn btn-sm btn-link text-danger p-0" onClick={() => setFiles(files.filter((_,j) => j!==i))}>x</button>
+            <div key={i} className="file-badge">
+              <span>📄 {f.name}</span>
+              <button onClick={() => setFiles(files.filter((_,j) => j!==i))}>×</button>
             </div>
           ))}
         </div>
       </div>
 
-      {error && <div className="alert alert-danger">{error}</div>}
+      {error && <div className="alert alert-danger mb-4">{error}</div>}
 
       <div className="text-center mb-4">
-        <button className="btn btn-navy btn-lg px-5 py-3" onClick={analyze} disabled={loading}>
-          {loading ? <><span className="spinner-border spinner-border-sm me-2" />Analizando...</> : 'Analizar cotizaciones'}
+        <button
+          className="btn btn-navy btn-lg px-5 py-3"
+          onClick={analyze}
+          disabled={loading}
+        >
+          {loading
+            ? <><span className="spinner-border spinner-border-sm me-2" />Analizando con IA...</>
+            : '✦ Analizar cotizaciones'}
         </button>
       </div>
 
       {result && (
         <div className="row g-3">
           <div className="col-md-6">
-            <div className="card h-100"><div className="card-body p-4">
-              <span className="section-label">Analisis interno</span>
-              <pre>{result.internalAnalysis}</pre>
-            </div></div>
+            <div className="card h-100">
+              <div className="card-body p-4">
+                <span className="section-label">Analisis interno</span>
+                <div className="result-block">
+                  <pre>{result.internalAnalysis}</pre>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="col-md-6">
-            <div className="card h-100"><div className="card-body p-4">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <span className="section-label mb-0">Email al cliente (English)</span>
-                <button className="btn btn-sm btn-outline-secondary" onClick={() => navigator.clipboard.writeText(result.clientEmail)}>Copiar</button>
+            <div className="card h-100">
+              <div className="card-body p-4">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <span className="section-label mb-0">Email al cliente (English)</span>
+                  <button
+                    className="btn btn-outline-secondary btn-sm"
+                    onClick={() => navigator.clipboard.writeText(result.clientEmail)}
+                  >
+                    Copiar
+                  </button>
+                </div>
+                <div className="result-block">
+                  <pre>{result.clientEmail}</pre>
+                </div>
               </div>
-              <pre>{result.clientEmail}</pre>
-            </div></div>
+            </div>
           </div>
         </div>
       )}

@@ -6,43 +6,72 @@ import History from '../components/History';
 import AdminPanel from '../components/AdminPanel';
 
 export default function Dashboard({ onLogout, isAdmin, userName }) {
-  const baseTabs = ['Cotizaciones', 'Documentacion', 'Mi Empresa', 'Historial'];
-  const tabs = isAdmin ? [...baseTabs, 'Admin'] : baseTabs;
+  const baseTabs = [
+    { label: 'Cotizaciones', icon: '📄' },
+    { label: 'Documentacion', icon: '📝' },
+    { label: 'Mi Empresa', icon: '🏢' },
+    { label: 'Historial', icon: '🕐' },
+  ];
+  const tabs = isAdmin ? [...baseTabs, { label: 'Admin', icon: '⚙️' }] : baseTabs;
   const [tab, setTab] = useState(0);
 
   return (
-    <>
-      <div style={{ background: 'linear-gradient(135deg,#0f172a,#1e3a5f)', color: 'white', padding: '1.5rem 0' }}>
-        <div className="container">
+    <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
+      {/* Header */}
+      <div style={{ background: '#0f172a', padding: '1.25rem 0' }}>
+        <div className="container" style={{ maxWidth: 1040 }}>
           <div className="d-flex justify-content-between align-items-center">
-            <div>
-              <h2 className="fw-bold mb-0" style={{ color: 'white' }}>Forwarding Operations Assistant</h2>
-              <p className="mb-0 mt-1" style={{ opacity: .7, fontSize: '.875rem' }}>
-                {userName ? `Hola, ${userName}` : 'Herramienta profesional de comercio exterior'}
-              </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
+              <div style={{
+                width: 36, height: 36, background: '#2563eb', borderRadius: 10,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontWeight: 900, color: 'white', fontSize: '0.95rem', flexShrink: 0
+              }}>F</div>
+              <div>
+                <div style={{ color: 'white', fontWeight: 800, fontSize: '1rem', letterSpacing: '-0.3px' }}>
+                  FOA
+                </div>
+                <div style={{ color: '#64748b', fontSize: '0.78rem' }}>
+                  {userName ? `Hola, ${userName.split(' ')[0]}` : 'Forwarding Operations Assistant'}
+                </div>
+              </div>
             </div>
-            <button className="btn btn-outline-light btn-sm" onClick={onLogout}>Salir</button>
+            <button
+              onClick={onLogout}
+              style={{
+                background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
+                color: '#94a3b8', borderRadius: 8, padding: '0.4rem 1rem',
+                fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
+                transition: 'background 0.2s'
+              }}
+              onMouseOver={e => e.target.style.background = 'rgba(255,255,255,0.15)'}
+              onMouseOut={e => e.target.style.background = 'rgba(255,255,255,0.08)'}
+            >
+              Salir
+            </button>
           </div>
         </div>
       </div>
 
-      <ul className="nav nav-app px-4">
+      {/* Nav tabs */}
+      <ul className="nav-app">
         {tabs.map((t, i) => (
-          <li className="nav-item" key={i}>
+          <li key={i} style={{ listStyle: 'none' }}>
             <button className={`nav-link ${tab === i ? 'active' : ''}`} onClick={() => setTab(i)}>
-              {t === 'Admin' ? '⚙️ Admin' : t}
+              {t.icon} {t.label}
             </button>
           </li>
         ))}
       </ul>
 
-      <div className="container py-4" style={{ maxWidth: 960 }}>
+      {/* Content */}
+      <div className="container py-4" style={{ maxWidth: 1040 }}>
         {tab === 0 && <Quotes />}
         {tab === 1 && <Documents />}
         {tab === 2 && <Company />}
         {tab === 3 && <History />}
         {tab === 4 && isAdmin && <AdminPanel />}
       </div>
-    </>
+    </div>
   );
 }
