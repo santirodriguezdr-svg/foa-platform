@@ -47,7 +47,7 @@ export default function History() {
                       <td>{r.client}</td>
                       <td>
                         <span style={{
-                          background: '#eff6ff', color: '#2563eb',
+                          background: '#fffbeb', color: '#b45309',
                           borderRadius: 999, padding: '0.2rem 0.6rem',
                           fontSize: '0.78rem', fontWeight: 700
                         }}>
@@ -60,8 +60,8 @@ export default function History() {
                             onClick={() => setViewing(r)}
                             style={{
                               fontSize: '0.78rem', fontWeight: 700,
-                              background: 'none', border: '1.5px solid #1a365d',
-                              color: '#1a365d', borderRadius: 7,
+                              background: 'none', border: '1.5px solid #d97706',
+                              color: '#d97706', borderRadius: 7,
                               padding: '4px 12px', cursor: 'pointer',
                               whiteSpace: 'nowrap'
                             }}

@@ -3,7 +3,7 @@ import React from 'react';
 export default function PendingApproval({ onBack }) {
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)',
+      background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)',
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
@@ -37,7 +37,7 @@ export default function PendingApproval({ onBack }) {
           color: '#475569'
         }}>
           Si tenés urgencia, contactá a{' '}
-          <a href="mailto:santirodriguezdr@gmail.com" style={{ color: '#2563eb', fontWeight: 600 }}>
+          <a href="mailto:santirodriguezdr@gmail.com" style={{ color: '#d97706', fontWeight: 600 }}>
             santirodriguezdr@gmail.com
           </a>
         </div>

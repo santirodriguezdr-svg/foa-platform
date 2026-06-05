@@ -200,7 +200,7 @@ export default function Documents() {
             )}
             <button
               className="btn btn-sm"
-              style={{ fontSize: '0.78rem', border: '1.5px solid #2563eb', color: '#2563eb', background: 'white', padding: '4px 12px', fontWeight: 600, borderRadius: 7 }}
+              style={{ fontSize: '0.78rem', border: '1.5px solid #d97706', color: '#d97706', background: 'white', padding: '4px 12px', fontWeight: 600, borderRadius: 7 }}
               onClick={() => bookingInputRef.current?.click()}
               disabled={bookingParsing}
             >

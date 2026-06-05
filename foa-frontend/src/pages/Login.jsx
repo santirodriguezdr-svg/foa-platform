@@ -66,7 +66,7 @@ export default function Login({ onLogin, onPending }) {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)',
+      background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)',
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
@@ -83,9 +83,9 @@ export default function Login({ onLogin, onPending }) {
       }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{
-            width: 48, height: 48, background: '#2563eb', borderRadius: 14,
+            width: 48, height: 48, background: '#f59e0b', borderRadius: 14,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 1rem', fontSize: '1.2rem', fontWeight: 900, color: 'white'
+            margin: '0 auto 1rem', fontSize: '1.2rem', fontWeight: 900, color: '#1c1917'
           }}>F</div>
           <h4 style={{ fontWeight: 900, color: '#0f172a', fontSize: '1.3rem', marginBottom: 4 }}>FOA</h4>
           <p style={{ color: '#64748b', fontSize: '0.875rem', margin: 0 }}>Forwarding Operations Assistant</p>
@@ -139,7 +139,7 @@ export default function Login({ onLogin, onPending }) {
               type="submit"
               disabled={loading}
               style={{
-                width: '100%', padding: '0.75rem', background: '#0f172a', color: 'white',
+                width: '100%', padding: '0.75rem', background: '#f59e0b', color: '#1c1917',
                 border: 'none', borderRadius: 10, fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer'
               }}
             >

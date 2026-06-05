@@ -97,7 +97,7 @@ export default function PortSearch({ label, value, onChange, placeholder = 'Ciud
                   <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: '0.4rem' }}>· {fnLabel(port.function)}</span>
                 )}
               </div>
-              <span style={{ fontFamily: 'monospace', fontSize: '0.78rem', fontWeight: 700, color: '#1a365d', background: '#e8f0fe', padding: '2px 7px', borderRadius: 4, flexShrink: 0 }}>
+              <span style={{ fontFamily: 'monospace', fontSize: '0.78rem', fontWeight: 700, color: '#b45309', background: '#fef3c7', padding: '2px 7px', borderRadius: 4, flexShrink: 0 }}>
                 {port.code}
               </span>
             </div>

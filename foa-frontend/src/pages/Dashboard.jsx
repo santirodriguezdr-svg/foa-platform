@@ -16,22 +16,22 @@ export default function Dashboard({ onLogout, isAdmin, userName }) {
   const [tab, setTab] = useState(0);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
+    <div style={{ minHeight: '100vh', background: '#fafaf9' }}>
       {/* Header */}
-      <div style={{ background: '#0f172a', padding: '1.25rem 0' }}>
+      <div style={{ background: '#1c1917', padding: '1.25rem 0' }}>
         <div className="container" style={{ maxWidth: 1040 }}>
           <div className="d-flex justify-content-between align-items-center">
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
               <div style={{
-                width: 36, height: 36, background: '#2563eb', borderRadius: 10,
+                width: 36, height: 36, background: '#f59e0b', borderRadius: 10,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontWeight: 900, color: 'white', fontSize: '0.95rem', flexShrink: 0
+                fontWeight: 900, color: '#1c1917', fontSize: '0.95rem', flexShrink: 0
               }}>F</div>
               <div>
                 <div style={{ color: 'white', fontWeight: 800, fontSize: '1rem', letterSpacing: '-0.3px' }}>
                   FOA
                 </div>
-                <div style={{ color: '#64748b', fontSize: '0.78rem' }}>
+                <div style={{ color: '#a8a29e', fontSize: '0.78rem' }}>
                   {userName ? `Hola, ${userName.split(' ')[0]}` : 'Forwarding Operations Assistant'}
                 </div>
               </div>

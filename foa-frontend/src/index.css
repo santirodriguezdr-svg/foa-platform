@@ -3,15 +3,21 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
-  --black: #0f172a;
-  --blue: #2563eb;
-  --blue-dark: #1d4ed8;
-  --blue-light: #eff6ff;
-  --blue-mid: #dbeafe;
-  --text: #1e293b;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --bg: #f8fafc;
+  --black: #1c1917;
+  --amber: #f59e0b;
+  --amber-dark: #d97706;
+  --amber-text: #b45309;
+  --amber-light: #fffbeb;
+  --amber-mid: #fde68a;
+  /* aliases — usados en las reglas CSS existentes */
+  --blue: var(--amber-dark);
+  --blue-dark: var(--amber-text);
+  --blue-light: var(--amber-light);
+  --blue-mid: var(--amber-mid);
+  --text: #1c1917;
+  --muted: #78716c;
+  --border: #e7e5e4;
+  --bg: #fafaf9;
   --white: #ffffff;
 }
 
@@ -32,8 +38,8 @@ body {
 
 /* NAV */
 .nav-app {
-  background: var(--white);
-  border-bottom: 1.5px solid var(--border);
+  background: var(--black);
+  border-bottom: none;
   padding: 0 1.5rem;
   display: flex;
   list-style: none;
@@ -42,7 +48,7 @@ body {
 }
 
 .nav-app .nav-link {
-  color: var(--muted);
+  color: rgba(255,255,255,0.45);
   border-bottom: 2px solid transparent;
   border-top: none;
   border-left: none;
@@ -57,8 +63,8 @@ body {
   white-space: nowrap;
 }
 
-.nav-app .nav-link:hover { color: var(--black); }
-.nav-app .nav-link.active { color: var(--blue); border-bottom-color: var(--blue); }
+.nav-app .nav-link:hover { color: rgba(255,255,255,0.85); }
+.nav-app .nav-link.active { color: var(--amber); border-bottom-color: var(--amber); }
 
 /* CARDS */
 .foa-card {
@@ -108,8 +114,8 @@ body {
 }
 
 .form-control:focus, .form-select:focus {
-  border-color: var(--blue) !important;
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+  border-color: var(--amber) !important;
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.15) !important;
   outline: none !important;
 }
 
@@ -122,8 +128,8 @@ body {
 
 /* BUTTONS */
 .btn-navy {
-  background: var(--black);
-  color: white;
+  background: var(--amber);
+  color: var(--black);
   border: none;
   border-radius: 10px;
   font-weight: 700;
@@ -131,23 +137,23 @@ body {
 }
 
 .btn-navy:hover, .btn-navy:focus {
-  background: var(--blue);
-  color: white;
+  background: var(--amber-dark);
+  color: var(--black);
   transform: translateY(-1px);
 }
 
 .btn-navy:disabled { opacity: 0.6; transform: none; }
 
 .btn-outline-primary {
-  border-color: var(--blue) !important;
-  color: var(--blue) !important;
+  border-color: var(--amber-dark) !important;
+  color: var(--amber-dark) !important;
   border-radius: 8px !important;
   font-weight: 600 !important;
   font-size: 0.8rem !important;
 }
 
 .btn-outline-primary:hover {
-  background: var(--blue) !important;
+  background: var(--amber-dark) !important;
   color: white !important;
 }
 
@@ -177,8 +183,8 @@ body {
 }
 
 .drop-zone:hover {
-  border-color: var(--blue);
-  background: var(--blue-light);
+  border-color: var(--amber);
+  background: var(--amber-light);
 }
 
 /* TABLE */
@@ -210,7 +216,7 @@ body {
 }
 
 .table-hover tbody tr:hover {
-  background: var(--blue-light) !important;
+  background: var(--amber-light) !important;
 }
 
 .table-bordered {
@@ -264,20 +270,20 @@ pre {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--blue-light);
-  border: 1px solid var(--blue-mid);
+  background: var(--amber-light);
+  border: 1px solid var(--amber-mid);
   border-radius: 8px;
   padding: 0.5rem 0.875rem;
   margin-top: 0.5rem;
   font-size: 0.82rem;
-  color: var(--blue);
+  color: var(--amber-text);
   font-weight: 500;
 }
 
 .file-badge button {
   background: none;
   border: none;
-  color: var(--blue);
+  color: var(--amber-text);
   cursor: pointer;
   padding: 0;
   font-size: 1rem;

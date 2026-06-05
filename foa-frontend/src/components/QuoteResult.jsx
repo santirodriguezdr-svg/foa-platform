@@ -40,8 +40,8 @@ export default function QuoteResult({ result, shipment, onBack }) {
       <div className="card mb-4">
         <div className="card-body p-4">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
-            <div style={{ width: 4, height: 20, background: '#1a365d', borderRadius: 2 }} />
-            <span style={{ fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a365d' }}>
+            <div style={{ width: 4, height: 20, background: '#1c1917', borderRadius: 2 }} />
+            <span style={{ fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1c1917' }}>
               Analisis interno
             </span>
           </div>
@@ -50,7 +50,7 @@ export default function QuoteResult({ result, shipment, onBack }) {
               remarkPlugins={[remarkGfm]}
               components={{
                 h2: ({ children }) => (
-                  <h6 style={{ fontWeight: 800, color: '#1a365d', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.4rem', marginTop: '1.5rem', marginBottom: '0.75rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                  <h6 style={{ fontWeight: 800, color: '#1c1917', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.4rem', marginTop: '1.5rem', marginBottom: '0.75rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
                     {children}
                   </h6>
                 ),
@@ -66,7 +66,7 @@ export default function QuoteResult({ result, shipment, onBack }) {
                     </table>
                   </div>
                 ),
-                thead: ({ children }) => <thead style={{ background: '#1a365d' }}>{children}</thead>,
+                thead: ({ children }) => <thead style={{ background: '#1c1917' }}>{children}</thead>,
                 th: ({ children }) => (
                   <th style={{ padding: '8px 14px', textAlign: 'left', fontWeight: 700, color: 'white', whiteSpace: 'nowrap', fontSize: '0.78rem', letterSpacing: '0.03em' }}>
                     {children}
@@ -85,7 +85,7 @@ export default function QuoteResult({ result, shipment, onBack }) {
                 strong: ({ children }) => <strong style={{ color: '#0f172a', fontWeight: 700 }}>{children}</strong>,
                 p: ({ children }) => <p style={{ margin: '0.5rem 0', color: '#334155' }}>{children}</p>,
                 blockquote: ({ children }) => (
-                  <div style={{ borderLeft: '3px solid #2563eb', paddingLeft: '1rem', margin: '0.75rem 0', color: '#475569', fontStyle: 'italic' }}>
+                  <div style={{ borderLeft: '3px solid #f59e0b', paddingLeft: '1rem', margin: '0.75rem 0', color: '#78716c', fontStyle: 'italic' }}>
                     {children}
                   </div>
                 ),
@@ -102,8 +102,8 @@ export default function QuoteResult({ result, shipment, onBack }) {
         <div className="card-body p-4">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{ width: 4, height: 20, background: '#2563eb', borderRadius: 2 }} />
-              <span style={{ fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a365d' }}>
+              <div style={{ width: 4, height: 20, background: '#f59e0b', borderRadius: 2 }} />
+              <span style={{ fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1c1917' }}>
                 Email al cliente
               </span>
             </div>
