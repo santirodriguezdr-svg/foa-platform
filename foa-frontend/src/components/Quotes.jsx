@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import api from '../api';
 import QuoteResult from './QuoteResult';
 import PortSearch from './PortSearch';
+import ClientSelect from './ClientSelect';
 
 const ALLOWED_TYPES = ['application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
 
@@ -76,7 +77,10 @@ export default function Quotes() {
             </div>
             <div className="col-md-3">
               <label className="form-label">Cliente</label>
-              <input className="form-control" placeholder="Global Imports LLC" value={form.cliente} onChange={e => setForm({...form,cliente:e.target.value})} />
+              <ClientSelect
+                value={form.cliente}
+                onChange={v => setForm(f => ({ ...f, cliente: v }))}
+              />
             </div>
           </div>
         </div>

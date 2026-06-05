@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../api';
 import PortSearch from './PortSearch';
+import ClientSelect from './ClientSelect';
 
 const INCOTERMS = ['FOB','CIF','EXW','CFR','DAP','DDP'];
 const CURRENCIES = ['USD','EUR','ARS'];
@@ -73,7 +74,22 @@ export default function Documents() {
       <div className="card mb-3"><div className="card-body p-4">
         <span className="section-label">Consignatario y Notificatario</span>
         <div className="row g-3">
-          <div className="col-md-6"><F form={form} onChange={setF} label="Consignatario (empresa)" id="importador" placeholder="Nombre de la empresa" /></div>
+          <div className="col-md-6">
+            <label className="form-label">Consignatario (empresa)</label>
+            <ClientSelect
+              value={form.importador}
+              onChange={v => setF('importador', v)}
+              onSelectContact={c => setForm(f => ({
+                ...f,
+                importador: c.name,
+                importadorCountry: c.country || f.importadorCountry,
+                importadorTaxId: c.tax_id || f.importadorTaxId,
+                importadorAddress: c.address || f.importadorAddress,
+                notificatario: c.notificatario || f.notificatario,
+                notificatarioAddress: c.notificatario_address || f.notificatarioAddress,
+              }))}
+            />
+          </div>
           <div className="col-md-3"><F form={form} onChange={setF} label="Pais" id="importadorCountry" placeholder="Pais" /></div>
           <div className="col-md-3"><F form={form} onChange={setF} label="Tax ID / CUIT" id="importadorTaxId" placeholder="ID fiscal" /></div>
           <div className="col-12"><F form={form} onChange={setF} label="Domicilio del consignatario" id="importadorAddress" placeholder="Direccion completa" /></div>

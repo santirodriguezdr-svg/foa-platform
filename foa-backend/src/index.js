@@ -14,6 +14,7 @@ app.use('/api/company', require('./routes/company'));
 app.use('/api/history', require('./routes/history'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/ports', require('./routes/ports'));
+app.use('/api/contacts', require('./routes/contacts'));
 
 app.get('/health', (req, res) => res.json({ ok: true }));
 

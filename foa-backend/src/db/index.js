@@ -59,6 +59,22 @@ async function initDB() {
   `);
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS contacts (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id),
+      name TEXT NOT NULL,
+      country TEXT,
+      tax_id TEXT,
+      address TEXT,
+      notificatario TEXT,
+      notificatario_address TEXT,
+      email TEXT,
+      phone TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS locode (
       code VARCHAR(5) PRIMARY KEY,
       country VARCHAR(2),
