@@ -1,9 +1,38 @@
 var GROQ_API_KEY = 'TU_GROQ_API_KEY_ACÁ';
 
-  function doGet() {
+  function doGet(e) {
     return HtmlService.createHtmlOutputFromFile('Index')
       .setTitle('Forwarding Operations Assistant')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  function loginAndGetToken(email, password) {
+    try {
+      var ss = getOrCreateUsersSheet();
+      var data = ss.getSheetByName('Usuarios').getDataRange().getValues();
+      for (var i = 1; i < data.length; i++) {
+        if (data[i][0].toLowerCase() === email.toLowerCase()) {
+          if (data[i][3] !== 'active') return { success: false, error: 'Cuenta inactiva. Contacta al administrador.' };
+          if (data[i][1].toString() === password) {
+            var token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+            var expiry = Date.now() + 8 * 60 * 60 * 1000;
+            PropertiesService.getScriptProperties().setProperty('tok_' + token, email + '|' + expiry);
+            return { success: true, token: token };
+          }
+          return { success: false, error: 'Contrasena incorrecta.' };
+        }
+      }
+      return { success: false, error: 'Email no encontrado. Solicita acceso.' };
+    } catch(e) { return { success: false, error: e.message }; }
+  }
+
+  function validateToken(token) {
+    try {
+      var val = PropertiesService.getScriptProperties().getProperty('tok_' + token);
+      if (!val) return false;
+      var expiry = parseInt(val.split('|')[1]);
+      return expiry > Date.now();
+    } catch(e) { return false; }
   }
 
   function callGroq(prompt) {
@@ -104,6 +133,49 @@ var GROQ_API_KEY = 'TU_GROQ_API_KEY_ACÁ';
         clientEmail: parts[1] ? parts[1].trim() : ""
       };
     } catch(e) { return { error: e.message }; }
+  }
+
+  // ===== USUARIOS / LOGIN =====
+
+  function getOrCreateUsersSheet() {
+    var props = PropertiesService.getScriptProperties();
+    var sheetId = props.getProperty('usersSheetId');
+    var ss;
+    if (sheetId) {
+      try { ss = SpreadsheetApp.openById(sheetId); } catch(e) { sheetId = null; }
+    }
+    if (!sheetId) {
+      ss = SpreadsheetApp.create('FOA - Usuarios');
+      props.setProperty('usersSheetId', ss.getId());
+      var sheet = ss.getActiveSheet().setName('Usuarios');
+      sheet.appendRow(['Email', 'Password', 'Nombre', 'Estado', 'Agregado']);
+      sheet.setFrozenRows(1);
+      sheet.appendRow(['santirodriguezdr@gmail.com', 'admin123', 'Santiago', 'active', new Date()]);
+    }
+    return ss;
+  }
+
+  function loginUser(email, password) {
+    try {
+      var ss = getOrCreateUsersSheet();
+      var data = ss.getSheetByName('Usuarios').getDataRange().getValues();
+      for (var i = 1; i < data.length; i++) {
+        if (data[i][0].toLowerCase() === email.toLowerCase()) {
+          if (data[i][3] !== 'active') return { success: false, error: 'Tu cuenta no esta activa. Contacta a Santiago.' };
+          if (data[i][1] === password) return { success: true, name: data[i][2] };
+          return { success: false, error: 'Contrasena incorrecta.' };
+        }
+      }
+      return { success: false, error: 'Email no encontrado. Solicita acceso.' };
+    } catch(e) { return { success: false, error: e.message }; }
+  }
+
+  function requestAccess(name, email) {
+    try {
+      var ss = getOrCreateUsersSheet();
+      ss.getSheetByName('Usuarios').appendRow([email, '', name, 'pending', new Date()]);
+      return { success: true };
+    } catch(e) { return { success: false, error: e.message }; }
   }
 
   // ===== EMPRESA =====
