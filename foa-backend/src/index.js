@@ -12,6 +12,7 @@ app.use('/api/quotes', require('./routes/quotes'));
 app.use('/api/documents', require('./routes/documents'));
 app.use('/api/company', require('./routes/company'));
 app.use('/api/history', require('./routes/history'));
+app.use('/api/admin', require('./routes/admin'));
 
 app.get('/health', (req, res) => res.json({ ok: true }));
 
