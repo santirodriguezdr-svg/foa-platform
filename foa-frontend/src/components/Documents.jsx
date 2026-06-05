@@ -60,10 +60,10 @@ export default function Documents() {
       <div className="card mb-3"><div className="card-body p-4">
         <span className="section-label">Importador</span>
         <div className="row g-3">
-          <div className="col-md-6"><F label="Empresa" id="importador" placeholder="Global Imports LLC" /></div>
-          <div className="col-md-3"><F label="Pais" id="importadorCountry" placeholder="USA" /></div>
-          <div className="col-md-3"><F label="Tax ID" id="importadorTaxId" placeholder="EIN" /></div>
-          <div className="col-12"><F label="Direccion" id="importadorAddress" placeholder="500 Commerce St, Miami FL" /></div>
+          <div className="col-md-6"><F label="Empresa" id="importador" placeholder="Ingrese el nombre de la empresa" /></div>
+          <div className="col-md-3"><F label="Pais" id="importadorCountry" placeholder="Ingrese el pais" /></div>
+          <div className="col-md-3"><F label="Tax ID" id="importadorTaxId" placeholder="Ingrese el ID fiscal" /></div>
+          <div className="col-12"><F label="Direccion" id="importadorAddress" placeholder="Ingrese la direccion" /></div>
         </div>
       </div></div>
 
