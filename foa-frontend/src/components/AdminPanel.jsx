@@ -10,6 +10,8 @@ const STATUS_LABEL = {
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [importing, setImporting] = useState(false);
+  const [importLog, setImportLog] = useState('');
 
   const fetchUsers = async () => {
     try {
@@ -32,6 +34,30 @@ export default function AdminPanel() {
     }
   };
 
+  const importLocode = async () => {
+    setImporting(true);
+    setImportLog('Iniciando importación...');
+    try {
+      const token = localStorage.getItem('foa_token');
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/ports/import`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let log = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        log += decoder.decode(value);
+        setImportLog(log);
+      }
+    } catch (e) {
+      setImportLog('Error: ' + e.message);
+    }
+    setImporting(false);
+  };
+
   if (loading) return <p className="text-muted">Cargando usuarios...</p>;
 
   const pending = users.filter(u => u.status === 'pending');
@@ -40,6 +66,28 @@ export default function AdminPanel() {
   return (
     <div>
       <h5 style={{ fontWeight: 800, color: '#0f172a', marginBottom: '1.5rem' }}>Panel de administración</h5>
+
+      {/* Importar LOCODE */}
+      <div className="card mb-4">
+        <div className="card-body p-4">
+          <span className="section-label">Base de datos UNLOCODE</span>
+          <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0.5rem 0 1rem' }}>
+            Importa el dataset oficial de puertos y aeropuertos (~37k registros). Solo necesitas hacerlo una vez.
+          </p>
+          <button
+            className="btn btn-navy px-4 py-2"
+            onClick={importLocode}
+            disabled={importing}
+          >
+            {importing ? <><span className="spinner-border spinner-border-sm me-2" />Importando...</> : 'Importar puertos UNLOCODE'}
+          </button>
+          {importLog && (
+            <pre style={{ marginTop: '1rem', background: '#0f172a', color: '#7dd3fc', borderRadius: 8, padding: '0.75rem 1rem', fontSize: '0.78rem', maxHeight: 160, overflowY: 'auto' }}>
+              {importLog}
+            </pre>
+          )}
+        </div>
+      </div>
 
       {pending.length > 0 && (
         <div style={{ marginBottom: '2rem' }}>

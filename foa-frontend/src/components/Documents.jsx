@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../api';
+import PortSearch from './PortSearch';
 
 const INCOTERMS = ['FOB','CIF','EXW','CFR','DAP','DDP'];
 const CURRENCIES = ['USD','EUR','ARS'];
@@ -143,9 +144,9 @@ export default function Documents() {
         <span className="section-label">Routing y transporte</span>
         <div className="row g-3">
           <div className="col-md-4"><F form={form} onChange={setF} label="Buque / Vuelo" id="vessel" placeholder="Nombre del buque o vuelo" /></div>
-          <div className="col-md-4"><F form={form} onChange={setF} label="Puerto de carga" id="portOfLoading" placeholder="Ej: Puerto de Buenos Aires" /></div>
-          <div className="col-md-4"><F form={form} onChange={setF} label="Puerto de descarga" id="portOfDischarge" placeholder="Ej: Port of Rotterdam" /></div>
-          <div className="col-md-4"><F form={form} onChange={setF} label="Destino final" id="destFinal" placeholder="Ciudad / pais de destino final" /></div>
+          <div className="col-md-4"><PortSearch label="Puerto de carga" value={form.portOfLoading} onChange={v => setF('portOfLoading', v)} /></div>
+          <div className="col-md-4"><PortSearch label="Puerto de descarga" value={form.portOfDischarge} onChange={v => setF('portOfDischarge', v)} /></div>
+          <div className="col-md-4"><PortSearch label="Destino final" value={form.destFinal} onChange={v => setF('destFinal', v)} /></div>
           <div className="col-md-4"><F form={form} onChange={setF} label="Pais de origen" id="countryOfOrigin" placeholder="Pais de origen de la mercaderia" /></div>
           <div className="col-md-2"><F form={form} onChange={setF} label="ETD" id="etd" type="date" /></div>
           <div className="col-md-2"><F form={form} onChange={setF} label="ETA" id="eta" type="date" /></div>

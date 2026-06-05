@@ -57,6 +57,20 @@ async function initDB() {
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS locode (
+      code VARCHAR(5) PRIMARY KEY,
+      country VARCHAR(2),
+      location VARCHAR(3),
+      name TEXT,
+      name_alt TEXT,
+      function TEXT,
+      coordinates TEXT
+    )
+  `);
+  await pool.query(`CREATE INDEX IF NOT EXISTS locode_name_idx ON locode USING gin(to_tsvector('simple', name))`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS locode_country_idx ON locode (country)`);
 }
 
 module.exports = { pool, initDB };

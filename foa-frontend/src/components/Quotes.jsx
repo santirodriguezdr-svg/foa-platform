@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import api from '../api';
 import QuoteResult from './QuoteResult';
+import PortSearch from './PortSearch';
 
 const ALLOWED_TYPES = ['application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
 
@@ -49,12 +50,12 @@ export default function Quotes() {
         <div className="card-body p-4">
           <span className="section-label">Datos del embarque</span>
           <div className="row g-3">
-            {[['origen','Origen','Ej: Buenos Aires, Argentina'],['destino','Destino','Ej: Miami, USA']].map(([k,l,p]) => (
-              <div className="col-md-6" key={k}>
-                <label className="form-label">{l}</label>
-                <input className="form-control" placeholder={p} value={form[k]} onChange={e => setForm({...form,[k]:e.target.value})} />
-              </div>
-            ))}
+            <div className="col-md-6">
+              <PortSearch label="Origen" value={form.origen} onChange={v => setForm({...form, origen: v})} placeholder="Ciudad o código UNLOCODE" />
+            </div>
+            <div className="col-md-6">
+              <PortSearch label="Destino" value={form.destino} onChange={v => setForm({...form, destino: v})} placeholder="Ciudad o código UNLOCODE" />
+            </div>
             <div className="col-12">
               <label className="form-label">Mercaderia</label>
               <input className="form-control" placeholder="Descripcion de la mercaderia" value={form.mercaderia} onChange={e => setForm({...form,mercaderia:e.target.value})} />
