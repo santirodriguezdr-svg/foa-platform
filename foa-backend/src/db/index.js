@@ -87,6 +87,9 @@ async function initDB() {
   `);
   await pool.query(`CREATE INDEX IF NOT EXISTS locode_name_idx ON locode USING gin(to_tsvector('simple', name))`);
   await pool.query(`CREATE INDEX IF NOT EXISTS locode_country_idx ON locode (country)`);
+
+  await pool.query(`ALTER TABLE quote_history ADD COLUMN IF NOT EXISTS analysis_internal TEXT`);
+  await pool.query(`ALTER TABLE quote_history ADD COLUMN IF NOT EXISTS analysis_email TEXT`);
 }
 
 module.exports = { pool, initDB };

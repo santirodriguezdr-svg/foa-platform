@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
+import QuoteResult from './QuoteResult';
 
 export default function History() {
   const [data, setData] = useState({ quotes: [], documents: [] });
+  const [viewing, setViewing] = useState(null);
 
   useEffect(() => { api.get('/api/history').then(({ data }) => setData(data)); }, []);
+
+  if (viewing) {
+    return (
+      <QuoteResult
+        result={{ internalAnalysis: viewing.analysis_internal, clientEmail: viewing.analysis_email }}
+        shipment={{ origen: viewing.origin, destino: viewing.destination, mercaderia: viewing.cargo, cliente: viewing.client }}
+        onBack={() => setViewing(null)}
+      />
+    );
+  }
 
   return (
     <div>
@@ -23,6 +35,7 @@ export default function History() {
                     <th>Mercaderia</th>
                     <th>Cliente</th>
                     <th>Forwarders</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -40,6 +53,24 @@ export default function History() {
                         }}>
                           {r.forwarders_count}
                         </span>
+                      </td>
+                      <td>
+                        {r.analysis_internal ? (
+                          <button
+                            onClick={() => setViewing(r)}
+                            style={{
+                              fontSize: '0.78rem', fontWeight: 700,
+                              background: 'none', border: '1.5px solid #1a365d',
+                              color: '#1a365d', borderRadius: 7,
+                              padding: '4px 12px', cursor: 'pointer',
+                              whiteSpace: 'nowrap'
+                            }}
+                          >
+                            Ver análisis
+                          </button>
+                        ) : (
+                          <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>—</span>
+                        )}
                       </td>
                     </tr>
                   ))}

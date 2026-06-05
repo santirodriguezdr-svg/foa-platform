@@ -53,14 +53,15 @@ router.post('/analyze', auth, upload.array('files'), async (req, res) => {
     const analysis = await callGroq(analysisPrompt);
     const parts = analysis.split('## EMAIL AL CLIENTE');
 
-    await pool.query('INSERT INTO quote_history (user_id, origin, destination, cargo, client, forwarders_count, incoterm) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-      [req.user.id, origen, destino, mercaderia, cliente, quotes.length, incoterm]);
+    const internalAnalysis = parts[0].replace('## ANALISIS INTERNO', '').trim();
+    const clientEmail = parts[1] ? parts[1].trim() : '';
 
-    res.json({
-      success: true,
-      internalAnalysis: parts[0].replace('## ANALISIS INTERNO', '').trim(),
-      clientEmail: parts[1] ? parts[1].trim() : ''
-    });
+    await pool.query(
+      'INSERT INTO quote_history (user_id, origin, destination, cargo, client, forwarders_count, incoterm, analysis_internal, analysis_email) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+      [req.user.id, origen, destino, mercaderia, cliente, quotes.length, incoterm, internalAnalysis, clientEmail]
+    );
+
+    res.json({ success: true, internalAnalysis, clientEmail });
   } catch (e) {
     res.json({ error: e.message });
   }
