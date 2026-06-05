@@ -9,14 +9,15 @@ export default function Quotes() {
   const [error, setError] = useState('');
   const inputRef = useRef();
 
+  const ALLOWED_TYPES = ['application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
   const addFiles = (newFiles) => {
-    const pdfs = Array.from(newFiles).filter(f => f.type === 'application/pdf');
-    setFiles(prev => [...prev, ...pdfs.filter(f => !prev.find(p => p.name === f.name))]);
+    const valid = Array.from(newFiles).filter(f => ALLOWED_TYPES.includes(f.type) || f.name.match(/\.(pdf|xlsx|xls)$/i));
+    setFiles(prev => [...prev, ...valid.filter(f => !prev.find(p => p.name === f.name))]);
   };
 
   const analyze = async () => {
     if (!form.origen || !form.destino || !form.cliente) { setError('Completa Origen, Destino y Cliente.'); return; }
-    if (!files.length) { setError('Subi al menos un PDF.'); return; }
+    if (!files.length) { setError('Subi al menos un archivo de cotizacion (PDF o Excel).'); return; }
     setError(''); setLoading(true); setResult(null);
     try {
       const fd = new FormData();
@@ -71,7 +72,7 @@ export default function Quotes() {
       {/* PDFs */}
       <div className="card mb-4">
         <div className="card-body p-4">
-          <span className="section-label">PDFs de cotizacion</span>
+          <span className="section-label">Archivos de cotizacion</span>
           <div
             className="drop-zone"
             onClick={() => inputRef.current.click()}
@@ -80,7 +81,7 @@ export default function Quotes() {
           >
             <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📄</div>
             <p style={{ fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem', fontSize: '0.9rem' }}>
-              Subi los PDFs de cotizacion
+              Subi tus cotizaciones
             </p>
             <p style={{ color: '#64748b', fontSize: '0.8rem', margin: 0 }}>Click o arrastra · PDF o Excel (.xlsx, .xls)</p>
             <input ref={inputRef} type="file" multiple accept=".pdf,.xlsx,.xls" style={{ display: 'none' }} onChange={e => addFiles(e.target.files)} />
