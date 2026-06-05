@@ -97,10 +97,10 @@ export default function Documents() {
       <div className="card mb-3"><div className="card-body p-4">
         <span className="section-label">Routing</span>
         <div className="row g-3">
-          <div className="col-md-4"><F label="Puerto origen" id="portOfLoading" placeholder="Puerto de Buenos Aires" /></div>
-          <div className="col-md-4"><F label="Puerto destino" id="portOfDischarge" placeholder="Port of Miami" /></div>
-          <div className="col-md-4"><F label="Pais de origen" id="countryOfOrigin" placeholder="Argentina" /></div>
-          <div className="col-md-4"><F label="Buque / Vuelo" id="vessel" placeholder="MSC OSCAR V.0612" /></div>
+          <div className="col-md-4"><F label="Puerto origen" id="portOfLoading" placeholder="Ingrese el puerto de origen" /></div>
+          <div className="col-md-4"><F label="Puerto destino" id="portOfDischarge" placeholder="Ingrese el puerto de destino" /></div>
+          <div className="col-md-4"><F label="Pais de origen" id="countryOfOrigin" placeholder="Ingrese el pais de origen" /></div>
+          <div className="col-md-4"><F label="Buque / Vuelo" id="vessel" placeholder="Ingrese el buque o vuelo" /></div>
           <div className="col-md-2"><F label="ETD" id="etd" type="date" /></div>
           <div className="col-md-2"><F label="ETA" id="eta" type="date" /></div>
           <div className="col-md-4"><label className="form-label">Flete</label><select className="form-select" value={form.freightTerms} onChange={e => setF('freightTerms',e.target.value)}>{FREIGHTS.map(v=><option key={v}>{v}</option>)}</select></div>
