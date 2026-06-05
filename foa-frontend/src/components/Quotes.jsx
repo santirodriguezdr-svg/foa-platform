@@ -82,8 +82,8 @@ export default function Quotes() {
             <p style={{ fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem', fontSize: '0.9rem' }}>
               Subi los PDFs de cotizacion
             </p>
-            <p style={{ color: '#64748b', fontSize: '0.8rem', margin: 0 }}>Click o arrastra · Solo PDF</p>
-            <input ref={inputRef} type="file" multiple accept=".pdf" style={{ display: 'none' }} onChange={e => addFiles(e.target.files)} />
+            <p style={{ color: '#64748b', fontSize: '0.8rem', margin: 0 }}>Click o arrastra · PDF o Excel (.xlsx, .xls)</p>
+            <input ref={inputRef} type="file" multiple accept=".pdf,.xlsx,.xls" style={{ display: 'none' }} onChange={e => addFiles(e.target.files)} />
           </div>
           {files.map((f, i) => (
             <div key={i} className="file-badge">

@@ -1,9 +1,23 @@
 const router = require('express').Router();
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
+const XLSX = require('xlsx');
 const { callGroq } = require('../services/groq');
 const { pool } = require('../db');
 const auth = require('../middleware/auth');
+
+async function extractText(file) {
+  const ext = file.originalname.split('.').pop().toLowerCase();
+  if (ext === 'xlsx' || ext === 'xls') {
+    const wb = XLSX.read(file.buffer, { type: 'buffer' });
+    return wb.SheetNames.map(name => {
+      const csv = XLSX.utils.sheet_to_csv(wb.Sheets[name]);
+      return `[Hoja: ${name}]\n${csv}`;
+    }).join('\n\n').substring(0, 3000);
+  }
+  const parsed = await pdfParse(file.buffer);
+  return parsed.text.substring(0, 3000);
+}
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
@@ -14,8 +28,7 @@ router.post('/analyze', auth, upload.array('files'), async (req, res) => {
 
     for (const file of req.files) {
       try {
-        const parsed = await pdfParse(file.buffer);
-        const text = parsed.text.substring(0, 3000);
+        const text = await extractText(file);
         if (text.length < 50) continue;
 
         const prompt = `You are a freight forwarding expert. Extract the freight quote from this document. Return ONLY a valid JSON object with these exact keys: forwarder (string), via as Air/Sea/Land (string), origin_charges (number), freight (number), destination_charges (number), total (number), transit_days (number), routing (string), currency (string), notes (string). Use 0 for missing numbers. File: ${file.originalname}\n---\n${text}`;
