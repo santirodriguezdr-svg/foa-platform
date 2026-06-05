@@ -50,7 +50,7 @@ export default function Documents() {
       <div className="card mb-3"><div className="card-body p-4">
         <span className="section-label">Datos del documento</span>
         <div className="row g-3">
-          <div className="col-md-4"><F label="N Invoice" id="invoiceNo" placeholder="INV-001" /></div>
+          <div className="col-md-4"><F label="Invoice number" id="invoiceNo" placeholder="INV-001" /></div>
           <div className="col-md-2"><F label="Fecha" id="date" type="date" /></div>
           <div className="col-md-3"><label className="form-label">Incoterm</label><select className="form-select" value={form.incoterm} onChange={e => setF('incoterm',e.target.value)}>{INCOTERMS.map(v=><option key={v}>{v}</option>)}</select></div>
           <div className="col-md-3"><label className="form-label">Moneda</label><select className="form-select" value={form.currency} onChange={e => setF('currency',e.target.value)}>{CURRENCIES.map(v=><option key={v}>{v}</option>)}</select></div>
